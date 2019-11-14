@@ -2,6 +2,17 @@
 
 //require "password.php";
 require "canvasModel.php";
+
+if(isset($_POST['title'])&&isset($_POST['message'])){
+
+$title=$_POST['title'];
+$message=$_POST['message'];
+createDiscussion($title,$message);
+}
+
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -16,7 +27,7 @@ require "canvasModel.php";
 
 
 	<h1>Discussion topics:</h1>   
-		<?php $d=getDiscussionTopics(); 
+		<?php $d=getDiscussions(); 
 		foreach($d as $i){
 			print "<li>".$i->title."</li>";	
 		}
@@ -24,10 +35,12 @@ require "canvasModel.php";
 ?>
 
     
- <!-- Prompting Messages-->  
-    <?php if ($msg != ""):?>  
-      <div id = "addmsg" class = "alert alert-info"><?php print $msg;?></div>
-    <?php endif;?>
+<form action="index.php" method="post">
+	<input type="text" name="title">
+	<input type="text" name="message">
+	<input type="submit" value="Add Title">
+</form>
+
 
 
 
