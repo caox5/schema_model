@@ -2,16 +2,25 @@
 
 //require "password.php";
 require "canvasModel.php";
-
+if(isset($_REQUEST['submit'])){
 if(isset($_POST['title'])&&isset($_POST['message'])){
-
 $title=$_POST['title'];
 $message=$_POST['message'];
-createDiscussion($title,$message);
+
+if (empty($title) || empty($message)) {
+        	$msg = "  * Field is required";
+    	} else {
+
+//if (empty($title) || empty($message)) {
+      //  	$msg = "  * Data is required";
+    //	} else {
+
+//echo $title." ".$message;
+		createDiscussion($title,$message);
+		$msg="";
 }
-
-
-
+}
+}
 
 ?>
 
@@ -26,26 +35,31 @@ createDiscussion($title,$message);
 <div class="display">
 
 
-	<h1>Discussion topics:</h1>   
-		<?php $d=getDiscussions(); 
+<h1>Discussion topics:</h1>  
+<ul> 
+<?php 
+
+$d=getDiscussions(); 
 		foreach($d as $i){
-			print "<li>".$i->title."</li>";	
+			echo "<li>".$i->title."</li>";	
 		}
 		
 ?>
+</ul>
 
+<h3>Create New Discussion Topic and Message:</h3>
     
 <form action="index.php" method="post">
 	<input type="text" name="title">
 	<input type="text" name="message">
-	<input type="submit" value="Add Title">
+	<input type="submit" value="submit" name="submit">
+<span id = "errTextInput" class = "error"> <?php echo $msg;?></span><br><br>
 </form>
 
 
 
 
 </div>
-<footer style=bottom:0;position:absolute><p>Hemraj Ojha, Master's Thesis </p></footer>
 </body>
 </html>
 
