@@ -177,13 +177,19 @@ return $jbody;
 }
 
 
-function getDiscussionTopic($id){
+function getDiscussionTopic($title){
   global $client;
   try {
 
   $header = array("Authorization"=>"Bearer 1053~fxYAgG5UpmgrQsewTrOiJPlzprK1ElHCmCiwmhu8CW2Sz8FXS6kZ2lll32S1w58S");
+  $d=getDiscussions();
+  foreach($d as $t){
+	  if($t->title==$title){
+		  $id=$t->id;
+	  }
+  }
 
-  $response = $client->request('get',"courses/119626/discussion_topics/$id",['headers'=>$header]);
+  $response = $client->request('get',"courses/119626/discussion_topics/".intval($id),['headers'=>$header]);
 //print_r($response);
 } catch (Exception $e) {
   print "There was an error getting the discussion topics from canvas";
@@ -199,16 +205,22 @@ if (!$jbody) {
   error_log("no json");
   exit;
 }
-print_r($jbody);
+//print_r($jbody);
 return $jbody;
 }	
 
 
-function getTopicEntries($id){
+function getTopicEntries($title){
 	global $client;
 	//$id=752581;
   try {
-	  
+	   $d=getDiscussions();
+  foreach($d as $t){
+          if($t->title==$title){
+                  $id=$t->id;
+          }
+  }
+
   //$url = 'courses/119626/discussion_topics/752581/entries';
   $header = array("Authorization"=>"Bearer 1053~fxYAgG5UpmgrQsewTrOiJPlzprK1ElHCmCiwmhu8CW2Sz8FXS6kZ2lll32S1w58S");
   $response = $client->request('get','courses/119626/discussion_topics/'.intval($id).'/entries',['headers'=>$header]);
