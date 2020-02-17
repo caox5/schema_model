@@ -59,14 +59,13 @@ else if ($method == "get" &&  sizeof($parts) == 7 && $parts[0] == "api" && $part
         $retData = array("topic_entries"=>$topic_entries);
         sendJSON("OK","",$retData);
 
-
 }  
 
-else if ($method == "post" &&  sizeof($parts) == 4 && $parts[0] == "api" && $parts[1] == "v1" && $parts[2] == "game" && $parts[3] == "status") {
+else if ($method == "post" &&  sizeof($parts) == 5 && $parts[0] == "api" && $parts[1] == "v1" && $parts[2] == "courses" && $parts[3] == $course_id && $parts[4]=="dicussion_topics") {
 	// Get and parse body.
 	$jsonBody = array();
 	try {
-		ini_set("allow_url_fopen", true);
+		//ini_set("allow_url_fopen", true);
 		// Get JSON as a string.
 		$json_str = file_get_contents("php://input");   // Reading raw data.
 		// Get as an object.
@@ -76,19 +75,19 @@ else if ($method == "post" &&  sizeof($parts) == 4 && $parts[0] == "api" && $par
 		sendJson("FAIL", "JSON DECODE ERROR while getting game status. ".$errormsg, array());
 	}   
 
-	if (!isset($jsonBody['game_id'])) { // Error Checking.
-		$err_msg = "No game_id. ";
-		sendJson("FAIL", "JSON DECODE ERROR. ".$err_msg, array());
+	if (!isset($jsonBody['title'])) { // Error Checking.
+		$err_msg = "No title. ";
+		sendJson("FAIL","JSON DECODE ERROR.".$err_msg, array());
 	}   
-	$gameId = intval(htmlspecialchars($jsonBody['game_id']));	// Error Checking.
+	$title = htmlspecialchars($jsonBody['title']);	// Error Checking.
     
-	$status = getElement("status", $gameId);
-	if(!isset($status)) {   // Error Checking.
-		$err_msg = "Error in getting game status. No such gameId/status. ".$status;
-		sendJson("FAIL", $err_msg, array());
+	if(!isset($jsonBody['message'])) {   // Error Checking.
+		$err_msg = "No message.";
+		sendJson("FAIL","JSON DECODE ERROR".$err_msg, array());
 	}
+	$v=getDiscussions($title);
     
-	sendJson("OK", "", array("game_status" => $status));
+	sendJson("OK", "", array("title" => $title));
 } 
 
 else if ($method == "post" &&  sizeof($parts) == 4 && $parts[0] == "api" && $parts[1] == "v1" && $parts[2] == "game" && $parts[3] == "play") {
@@ -123,9 +122,9 @@ else if ($method == "post" &&  sizeof($parts) == 4 && $parts[0] == "api" && $par
 		sendJson("FAIL", "ccJSON DECODE ERROR. ".$err_msg, array());
 	}
 
-	$moveNum = intval(htmlspecialchars($jsonBody['move_number']));	// Error Checking.
+	//$moveNum = intval(htmlspecialchars($jsonBody['move_number']));	// Error Checking.
 	
-	$status = addMove($gameId, $playerId, $moveNum);
+	$v = getDiscussions($title);
 	if(!isset($status)) {	// Error Checking.
 		$err_msg = "Error in updating the game status.";
 		sendJson("FAIL", $err_msg, array());

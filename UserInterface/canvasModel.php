@@ -214,10 +214,12 @@ function getTopicEntries($title){
 	global $client;
 	//$id=752581;
   try {
-	   $d=getDiscussions();
+	  
+	  $d=getDiscussions();
+
   foreach($d as $t){
           if($t->title==$title){
-                  $id=$t->id;
+		  $id=$t->id;
           }
   }
 
@@ -245,6 +247,169 @@ return $jbody;
 }
 
 
+function createDiscussionEntry($title,$message) {
+
+//$p=checkDiscussion($name);
+
+//if( isset($p))
+//      return $p;
+
+ global $client;
+try {
+  $header = array("Authorization"=>"Bearer 1053~fxYAgG5UpmgrQsewTrOiJPlzprK1ElHCmCiwmhu8CW2Sz8FXS6kZ2lll32S1w58S");
+
+$data=array(['message'=>$message]);
+ $d=getTopicEntries($title);
+  foreach($d as $t){
+          if($t->title==$title){
+                  $id=$t->id;
+          }
+  }
+  $response = $client->request('post','courses/119626/discussion_topics/'.$id.'/entries',['headers'=>$header,'form_params'=>$data]);
+} catch (Exception $e) {
+  print "There was an error creating new discussion entry";
+  header("content-type: text/plain",true);
+  print_r($e);
+  $a=print_r($e,true);
+  error_log($a);
+  exit;
+}
+
+$body = (string) $response->getBody();
+$jbody = json_decode($body);
+if (!$jbody) {
+  error_log("no json");
+  exit;
+}
+return $jbody;
+}
+
+
+function getEntriesList($title){
+        global $client;
+        //$id=752581;
+  try {
+
+          $d=getDiscussions();
+
+  foreach($d as $t){
+          if($t->title==$title){
+                  $id=$t->id;
+          }
+  }
+
+  //$url = 'courses/119626/discussion_topics/752581/entries';
+  $header = array("Authorization"=>"Bearer 1053~fxYAgG5UpmgrQsewTrOiJPlzprK1ElHCmCiwmhu8CW2Sz8FXS6kZ2lll32S1w58S");
+  $response = $client->request('get','courses/119626/discussion_topics/'.intval($id).'/entry_list',['headers'=>$header]);
+//print_r($response);
+} catch (Exception $e) {
+  print "There was an error getting the discussion entries list from canvas";
+  header("content-type: application/json",true);
+  print_r($e);
+  $a=print_r($e,true);
+  error_log($a);
+  exit;
+}
+$body = (string) $response->getBody();
+$jbody = json_decode($body);
+if (!$jbody) {
+  error_log("no json");
+  exit;
+}
+//print_r($jbody);
+return $jbody;
+
+}
+
+
+
+function getEntryReplies($title){
+        global $client;
+        //$id=752581;
+  try {
+
+          $d=getDiscussions();
+
+  foreach($d as $t){
+          if($t->title==$title){
+                  $id=$t->id;
+          }
+  }
+
+	  $e=getTopicEntries($title);
+	  foreach($e as $ee){
+          if($ee->title==$title){
+                  $eid=$ee->id;
+          }
+  }
+
+  //$url = 'courses/119626/discussion_topics/752581/entries';
+  $header = array("Authorization"=>"Bearer 1053~fxYAgG5UpmgrQsewTrOiJPlzprK1ElHCmCiwmhu8CW2Sz8FXS6kZ2lll32S1w58S");
+  $response = $client->request('get','courses/119626/discussion_topics/'.intval($id).'/entries'.intval($eid).'/replies',['headers'=>$header]);
+//print_r($response);
+} catch (Exception $e) {
+  print "There was an error getting the discussion topic entries from canvas";
+  header("content-type: application/json",true);
+  print_r($e);
+  $a=print_r($e,true);
+  error_log($a);
+  exit;
+}
+$body = (string) $response->getBody();
+$jbody = json_decode($body);
+if (!$jbody) {
+  error_log("no json");
+  exit;
+}
+//print_r($jbody);
+return $jbody;
+
+}
+
+function rateEntry($title) {
+
+//$p=checkDiscussion($name);
+
+//if( isset($p))
+//      return $p;
+
+ global $client;
+try {
+  $header = array("Authorization"=>"Bearer 1053~fxYAgG5UpmgrQsewTrOiJPlzprK1ElHCmCiwmhu8CW2Sz8FXS6kZ2lll32S1w58S");
+
+  $data=array(['rating'=>$rating]);
+
+$e=getTopicEntries($title);
+          foreach($e as $ee){
+          if($ee->title==$title){
+                  $eid=$ee->id;
+          }
+  }
+
+ $d=getDiscussionTopic($title);
+  foreach($d as $t){
+          if($t->title==$title){
+                  $id=$t->id;
+          }
+  }
+  $response = $client->request('post','courses/119626/discussion_topics/'.intval($id).'/entries'.intval($eid).'/rating',['headers'=>$header,'form_params'=>$data]);
+} catch (Exception $e) {
+  print "There was an error creating new discussion entry";
+  header("content-type: text/plain",true);
+  print_r($e);
+  $a=print_r($e,true);
+  error_log($a);
+  exit;
+}
+
+$body = (string) $response->getBody();
+$jbody = json_decode($body);
+if (!$jbody) {
+  error_log("no json");
+  exit;
+}
+return $jbody;
+}
 
 
 
