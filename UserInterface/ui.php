@@ -63,7 +63,7 @@ if(isset($_REQUEST['submit'])){
 
 <form action="/action_page.php" class="form-container">
 
-    <label for="post"><b><?php echo $t->title;?></b></label> 
+    <label for="post"><b><?php echo $t->user_name;?></b></label> 
 	<p><?php echo $t->message;?></p>  
     <button type="submit" class="btn">Reply</button>
     <button type="submit" class="btn">Comment</button>
@@ -72,7 +72,7 @@ if(isset($_REQUEST['submit'])){
    <label for="psw"><b>Enter Post</b></label><br>
     <input type="text" placeholder="Enter Post" name="post" required>
     <button type="submit" class="btn" onclick="enterPost()">Post</button>
-    <button type="submit" class="btn cancel" onclick="closeForm()">Cancel</button>
+    <button type="submit" class="btn cancel" onclick="toggleForm(<?php echo $t->id;?>)">Cancel</button>
   </form>
 
 </div><div class="node">
@@ -96,7 +96,7 @@ if(isset($_REQUEST['submit'])){
    <label for="psw"><b>Enter Post</b></label><br>
     <input type="text" placeholder="Enter Post" name="post" required>
     <button type="submit" class="btn" onclick="enterPost()">Post</button>
-    <button type="submit" class="btn cancel" onclick="closeForm()">Cancel</button>
+    <button type="submit" class="btn cancel" onclick="toggleForm(<?php echo $entry->id;?>)">Cancel</button>
   </form>
 		</div>
 <?php
@@ -108,7 +108,7 @@ if(isset($_REQUEST['submit'])){
 			<div class='node'>
 		<!--	<div class='circle'>   -->
 			<?php
-				echo "<input class='circle' type='image' id='".$entry->id."-logo' onclick='toggleForm(".$r->id.")' src='".$r->user->avatar_image_url."'>"; ?>
+				echo "<input class='circle' type='image' id='".$r->id."-logo' onclick='toggleForm(".$r->id.")' src='".$r->user->avatar_image_url."'>"; ?>
 			</div><div class='show_form' id="<?php echo $r->id;?>-content">
 				<?php 
 		 	//	echo "<br>".$r->user_name;
@@ -125,7 +125,7 @@ if(isset($_REQUEST['submit'])){
    <label for="psw"><b>Enter Post</b></label><br>
     <input type="text" placeholder="Enter Post" name="post" required>
     <button type="submit" class="btn" onclick="enterPost()">Post</button>
-    <button type="submit" class="btn cancel" onclick="closeForm()">Cancel</button>
+    <button type="submit" class="btn cancel" onclick="toggleForm(<?php echo $r->id;?>)">Cancel</button>
   </form>
 		</div>
 			<?php
