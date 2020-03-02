@@ -12,7 +12,9 @@ if(isset($_REQUEST['submit'])){
 
 <!DOCTYPE html>
 <html lang="en">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 <head>
+<link rel="stylesheet" type="text/css" href="style1.css">
 <script type="text/javascript" language="javascript">
     var titles = new Array();
     <?php 
@@ -22,14 +24,14 @@ if(isset($_REQUEST['submit'])){
     <?php } ?>
 </script>			
 <title>Canvas Discussions</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style1.css">
 </head>
 <body>
 <div>
 
 <h1>Select Discussion Board:</h1>  
      
-<form action="index.php" method="post">	
+<form action="ui.php" method="post">	
 <select name="title">
 <script type="text/javascript">
       for (i=0,len=titles.length;i<len;i++) {
@@ -42,26 +44,37 @@ if(isset($_REQUEST['submit'])){
 </form>
 <?php  
 	
-		echo "Posts: <br><br>";
-		foreach($e as $entry){
-
-		echo "<br><br><img src='".$entry->user->avatar_image_url."'>";
-		echo "<br>".$entry->user_name;
-		echo $entry->message;
-		echo "<br>Replies:<br><br>";
-		foreach($entry->recent_replies as $r){
-				echo "<img src='".$r->user->avatar_image_url."'>";
-				echo "<br>".$r->user_name;
-				echo $r->message;
-
-		}
-
-      
-        }
-      
-
-
+		//echo "Posts: <br><br>";
+		foreach($e as $entry){ ?>
+		<div class='card'> 
+		<div class='circle'>
+		<?php
+		echo "<img src='".$entry->user->avatar_image_url."'>"; ?>
+			</div><div class='container'> 
+			<?php
+			echo "<br>".$entry->user_name;
+		echo "<br>".$entry->message;
 ?>
+		</div></div>
+<?php
+			//echo "<br><h4>Replies:</h4><br>";
+		}
+?>
+		<?php	
+		foreach($entry->recent_replies as $r){ ?>
+			<div class='card'>
+			<div class='circle'>
+			<?php
+				echo "<img src='".$r->user->avatar_image_url."'>"; ?>
+				</div><div class='container'>
+				<?php 
+		 		echo "<br>".$r->user_name;
+		echo "<br>".$r->message; ?>
+		</div></div>
+			<?php
+			} ?>
+		
+
 
 </div>
 </body>

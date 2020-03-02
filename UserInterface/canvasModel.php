@@ -172,12 +172,11 @@ if (!$jbody) {
 }
 return $jbody;
 
-
-
 }
 
 
 function getDiscussionTopic($title){
+      
   global $client;
   try {
 
@@ -192,9 +191,10 @@ function getDiscussionTopic($title){
   $response = $client->request('get',"courses/119626/discussion_topics/".intval($id),['headers'=>$header]);
 //print_r($response);
 } catch (Exception $e) {
-  print "There was an error getting the discussion topics from canvas";
+  print "There was an error getting the discussion topic from canvas";
   header("content-type: application/json",true);
   print_r($e);
+  print_r($response);
   $a=print_r($e,true);
   error_log($a);
   exit;

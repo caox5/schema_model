@@ -5,6 +5,7 @@ if(isset($_REQUEST['submit'])){
 	if(isset($_POST['title'])){
 		$title=$_POST['title'];
 		$e=getTopicEntries($title);
+		$t=getDiscussionTopic($title);
 	}
 }
 
@@ -15,9 +16,13 @@ if(isset($_REQUEST['submit'])){
 <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 <head>
 <link rel="stylesheet" type="text/css" href="style1.css">
+<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src='script1'></script>
 <script type="text/javascript" language="javascript">
     var titles = new Array();
-    <?php 
+<?php
         $d=getDiscussions();
         foreach($d as $val){ ?>
         titles.push('<?php echo $val->title; ?>');
@@ -41,36 +46,48 @@ if(isset($_REQUEST['submit'])){
 </select> 
 <input type="submit" value="submit" name="submit">
 <span id = "errTextInput" class = "error"> <?php echo $msg;?></span><br><br>
-</form>
-<?php  
-	
+</form><div class="node">
+<?php  		
 		//echo "Posts: <br><br>";
-		foreach($e as $entry){ ?>
-		<div class='card'> 
-		<div class='circle'>
-		<?php
-		echo "<img src='".$entry->user->avatar_image_url."'>"; ?>
-			</div><div class='container'> 
+		$t=getDiscussionTopic($title); 
+    // print_r($t);	
+	//echo "<br>".$t->title."<br>";
+	echo "<input class='circle' type='image' id='".$t->id."-logo' onclick='toggleForm(".$t->id.")' src='".$t->author->avatar_image_url."'>";
+?>	
+	</div><div class="show_form" id="<?php echo $t->id;?>-content">
+<?php	
+	echo "<br>".$t->title;
+	echo "<br>".$t->message;
+
+?>
+
+
+
+</div><div class="node">
+<?php		
+		foreach($e as $entry){ 
+		echo "<input class='circle' id='".$entry->id."-logo' type='image'  onclick='toggleForm(".$entry->id.")' src='".$entry->user->avatar_image_url."'>"; ?>
+		</div><div class="show_form" id="<?php echo $entry->id;?>-content"> 
 			<?php
 			echo "<br>".$entry->user_name;
 		echo "<br>".$entry->message;
 ?>
-		</div></div>
+		</div>
 <?php
 			//echo "<br><h4>Replies:</h4><br>";
 		}
 ?>
 		<?php	
 		foreach($entry->recent_replies as $r){ ?>
-			<div class='card'>
-			<div class='circle'>
+			<div class='node'>
+		<!--	<div class='circle'>   -->
 			<?php
-				echo "<img src='".$r->user->avatar_image_url."'>"; ?>
-				</div><div class='container'>
+				echo "<input class='circle' type='image' id='".$entry->id."-logo' onclick='toggleForm(".$r->id.")' src='".$r->user->avatar_image_url."'>"; ?>
+			</div><div class='show_form' id="<?php echo $r->id;?>-content">
 				<?php 
 		 		echo "<br>".$r->user_name;
 		echo "<br>".$r->message; ?>
-		</div></div>
+		</div>
 			<?php
 			} ?>
 		

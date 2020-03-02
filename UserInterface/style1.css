@@ -1,63 +1,15 @@
-.card {
-  /* Add shadows to create the "card" effect */
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-  width: 60%; 
-  transition: 0.3s;
-  border-radius: 5px;
-  /*width: 220px; */
-  /*height: 75%; */
-  /*background: #fff; */
-  border-top-right-radius: 10px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  box-shadow: 0 14px 26px rgba(0,0,0,0.04);
-  transition: all 0.3s ease-out;
-  text-decoration: none;
-}
-
-/* On mouse-over, add a deeper shadow */
-.card:hover {
-  /*box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2); */
-  transform: translateY(-5px) scale(1.005) translateZ(0);
-  box-shadow: 0 24px 36px rgba(0,0,0,0.11), 0 24px 46px var(--box-shadow-color);
-  background: #90EE90;
-}
-
-.card:active {
-  transform: scale(1) translateZ(0);
-  box-shadow: 0 15px 24px rgba(0,0,0,0.11),
-    0 15px 24px var(--box-shadow-color);
-}
-
-body {
-  background: #f2f4f8;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  flex-wrap: wrap;
-  height: 100vh;
-  font-family: "Open Sans";
-}
-/* Add some padding inside the card container */
-.container {
-  padding: 2px 16px;
-}
 
 .circle {
   position: relative;
-  width: 80px;
-  height: 80px;
-  overflow: hidden;
+  width: 5%;
+  height: 5%;
+  overflow: auto;
   border-radius: 50%;
-  border: 1px solid rgba(0,0,0,0.2);
+  border: 1px solid rgba(0,0,0,0.2);    
 }
 
-.circle img {
-  width: 100%;
-  height: 100%;
+.show_form {
+	display : none;
+	
 }
 
