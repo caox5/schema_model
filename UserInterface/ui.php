@@ -33,7 +33,7 @@ if(isset($_REQUEST['submit'])){
 </head>
 <body>
 <div>
-
+<div class='list' id='list'>
 <h1>Select Discussion Board:</h1>  
      
 <form action="ui.php" method="post">	
@@ -44,93 +44,94 @@ if(isset($_REQUEST['submit'])){
       }
 </script>
 </select> 
-<input type="submit" value="submit" name="submit">
+<button type="submit" class="submit" name="submit">Submit</button>
 <span id = "errTextInput" class = "error"> <?php echo $msg;?></span><br><br>
-</form><div class="node">
-<?php  		
-		//echo "Posts: <br><br>";
-		//$t=getDiscussionTopic($title); 
-    // print_r($t);	
-	//echo "<br>".$t->title."<br>";
-	echo "<input class='circle' type='image' id='".$t->id."-logo' onclick='toggleForm(".$t->id.")' src='".$t->author->avatar_image_url."'>";
-?>	
-	</div><div class="show_form" id="<?php echo $t->id;?>-content">
-<?php	
-	//echo "<br>".$t->title;
-	//echo "<br>".$t->message;
+</form>
+</div>
 
-?>
-
-<form action="/action_page.php" class="form-container">
-
+<div class="container">
+	<div class="node">
+	<?php echo "<input class='circle' type='image' id='".$t->id."-logo' onclick='toggleForm(".$t->id.")' src='".$t->author->avatar_image_url."'>";
+ 	echo "<br>".$t->user_name; ?>
+	
+</div>
+<div class="show_form" id="<?php echo $t->id;?>-content">
+<form class="form-container-main" action="javascript:void(0);">
     <label for="post"><b><?php echo $t->user_name;?></b></label> 
-	<p><?php echo $t->message;?></p>  
-    <button type="submit" class="btn">Reply</button>
-    <button type="submit" class="btn">Comment</button>
-    <button type="submit" class="btn">Solution</button>
-    <button type="submit" class="btn">Discussion</button><br>
-   <label for="psw"><b>Enter Post</b></label><br>
-    <input type="text" placeholder="Enter Post" name="post" required>
-    <button type="submit" class="btn" onclick="enterPost()">Post</button>
-    <button type="submit" class="btn cancel" onclick="toggleForm(<?php echo $t->id;?>)">Cancel</button>
-  </form>
+    <p><?php echo $t->message;?></p>  
+    <button class="btn" onclick="open_form(<?php echo $t->id;?>)">Reply</button>
+    <button class="btn" onclick="open_form(<?php echo $t->id;?>)">Comment</button>
+    <button class="btn" onclick="open_form(<?php echo $t->id;?>)">Solution</button>
+    <button class="btn" onclick="open_form(<?php echo $t->id;?>)">Discussion</button>
+</form><br>
+<div class="open_form" id='<?php echo $t->id; ?>-form'>
+    <form action="#" class="form-container-post" id="<?php echo $t->id;?>-post">
+    	<label for="psw"><b>Enter Post</b></label><br>
+    	<input type="text" placeholder="Enter Post" name="post" required>
+    	<button type="submit" class="btn" onclick="enterPost()">Post</button>
+    	<button type="submit" class="btn cancel" onclick="toggleForm(<?php echo $t->id;?>)">Cancel</button>
+    </form>
+</div>
+</div>
+</div>
 
-</div><div class="node">
 <?php		
-		foreach($e as $entry){ 
-		echo "<input class='circle' id='".$entry->id."-logo' type='image'  onclick='toggleForm(".$entry->id.")' src='".$entry->user->avatar_image_url."'>"; ?>
-		</div><div class="show_form" id="<?php echo $entry->id;?>-content"> 
-			<?php
-		//	echo "<br>".$entry->user_name;
-	//	echo "<br>".$entry->message;
-?>
+foreach($e as $entry){ ?>
+<div class="container">
+	<div class="node">		
+	<?php echo "<input class='circle' type='image' id='".$entry->id."-logo' onclick='toggleForm(".$entry->id.")' src='".$entry->user->avatar_image_url."'>";  ?>		
+	<?php echo "<br>".$entry->user_name;?>
+</div>
+<div class="show_form" id="<?php echo $entry->id;?>-content"> 
+<form class="form-container-main" action="javascript:void(0);">    
+   <label for="post"><b><?php echo $entry->user_name;?></b></label> 
+    <p><?php echo $entry->message;?></p>  
+    <button type="submit" class="btn" onclick="open_form(<?php echo $entry->id;?>)">Reply</button>
+    <button type="submit" class="btn" onclick="open_form(<?php echo $entry->id;?>)">Comment</button>
+    <button type="submit" class="btn" onclick="open_form(<?php echo $entry->id;?>)">Solution</button>
+    <button type="submit" class="btn" onclick="open_form(<?php echo $entry->id;?>)">Discussion</button>
+</form><br>
+<div class="open_form" id='<?php echo $entry->id; ?>-form'>
+    <form action="#" class="form-container-post" id="<?php echo $entry->id;?>-post">
+    	<label for="psw"><b>Enter Post</b></label><br>
+    	<input type="text" placeholder="Enter Post" name="post" required>
+    	<button type="submit" class="btn" onclick="enterPost()">Post</button>
+    	<button type="submit" class="btn cancel" onclick="toggleForm(<?php echo $entry->id;?>)">Cancel</button>
+    </form>
+</div>
+</div>
+</div>
+<?php }  ?>
 
-<form action="/action_page.php" class="form-container">
 
-    <label for="post"><b><?php echo $entry->user_name;?></b></label> 
-	<p><?php echo $entry->message;?></p>  
-    <button type="submit" class="btn">Reply</button>
-    <button type="submit" class="btn">Comment</button>
-    <button type="submit" class="btn">Solution</button>
-    <button type="submit" class="btn">Discussion</button><br>
-   <label for="psw"><b>Enter Post</b></label><br>
-    <input type="text" placeholder="Enter Post" name="post" required>
-    <button type="submit" class="btn" onclick="enterPost()">Post</button>
-    <button type="submit" class="btn cancel" onclick="toggleForm(<?php echo $entry->id;?>)">Cancel</button>
-  </form>
-		</div>
-<?php
-			//echo "<br><h4>Replies:</h4><br>";
-		}
-?>
-		<?php	
-		foreach($entry->recent_replies as $r){ ?>
-			<div class='node'>
-		<!--	<div class='circle'>   -->
-			<?php
-				echo "<input class='circle' type='image' id='".$r->id."-logo' onclick='toggleForm(".$r->id.")' src='".$r->user->avatar_image_url."'>"; ?>
-			</div><div class='show_form' id="<?php echo $r->id;?>-content">
-				<?php 
-		 	//	echo "<br>".$r->user_name;
-	//	echo "<br>".$r->message; ?>
-
-<form action="/action_page.php" class="form-container">
-
+<?php	
+foreach($entry->recent_replies as $r){ ?>
+<div class="container">
+	<div class="node">        
+	<?php echo "<input class='circle' type='image' id='".$r->id."-logo' onclick='toggleForm(".$r->id.")' src='".$r->user->avatar_image_url."'>"; ?> 	
+	<?php echo "<br>".$r->user_name;?>
+</div>
+<div class="show_form" id="<?php echo $r->id;?>-content">
+<form class="form-container-main" action="javascript:void(0);">
     <label for="post"><b><?php echo $r->user_name;?></b></label> 
-   <p> <?php echo $r->message;?></p>	
-    <button type="submit" class="btn">Reply</button>
-    <button type="submit" class="btn">Comment</button>
-    <button type="submit" class="btn">Solution</button>
-    <button type="submit" class="btn">Discussion</button><br>
-   <label for="psw"><b>Enter Post</b></label><br>
-    <input type="text" placeholder="Enter Post" name="post" required>
-    <button type="submit" class="btn" onclick="enterPost()">Post</button>
-    <button type="submit" class="btn cancel" onclick="toggleForm(<?php echo $r->id;?>)">Cancel</button>
+    <p><?php echo $r->message;?></p>	
+    <button type="submit" class="btn" onclick="open_form(<?php echo $r->id;?>)">Reply</button>
+    <button type="submit" class="btn" onclick="open_form(<?php echo $r->id;?>)">Comment</button>
+    <button type="submit" class="btn" onclick="open_form(<?php echo $r->id;?>)">Solution</button>
+    <button type="submit" class="btn" onclick="open_form(<?php echo $r->id;?>)">Discussion</button>
+</form><br>
+<div class="open_form" id='<?php echo $r->id; ?>-form'>
+    <form action="#" class="form-container-post" id="<?php echo $r->id;?>-post">
+    	<label for="psw"><b>Enter Post</b></label><br>
+    	<input type="text" placeholder="Enter Post" name="post" required>
+    	<button type="submit" class="btn" onclick="">Post</button>
+    	<button type="submit" class="btn cancel" onclick="toggleForm(<?php echo $r->id;?>)">Cancel</button>
   </form>
-		</div>
-			<?php
-			} ?>
-		
+  </div>
+</div>	
+</div>		
+<?php	} ?>
+	
 
 
 </div>

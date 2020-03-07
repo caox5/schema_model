@@ -1,8 +1,7 @@
-
 .circle {
   position: relative;
-  width: 5%;
-  height: 5%;
+  width: 50px;
+  height: 50px;
   overflow: auto;
   border-radius: 50%;
   border: 1px solid rgba(0,0,0,0.2);    
@@ -29,25 +28,41 @@
   width: 380px;
 }
 
+.container {
+  position: relative;
+}
+
+.node {
+    position: relative; 
+    top: 0;
+}
+
 /* The popup form - hidden by default */
 .show_form {
   display: none;
-  position: fixed;
- /* bottom: 0;*/
- /* right: 0.01px;*/
+  position: absolute;
+  top: 0;
+  margin-right: 5px;
+  margin-left: 3.5em;
+  float: right;
+  /*bottom: -10; */
   border: 3px solid #f1f1f1;
-  z-index: 9;
+  z-index: 1;
 }
 
-/* Add styles to the form container */
-.form-container {
+/* es to the form container */
+.form-container-main, .form-container-post {
   max-width: 4000px;
-  padding: 05px;
+  padding: 01px;
   background-color: white;
 }
 
+.open_form {
+	display: none;
+}
+
 /* Full-width input fields */
-.form-container input[type=text], .form-container input[type=password] {
+.form-container-main input[type=text], .form-container-main input[type=password], .form-container-post  input[type=text], .form-container-post input[type=password]{
   width: 95%;
   padding: 05px;
   margin: 3px 0 22px 0;
@@ -56,13 +71,13 @@
 }
 
 /* When the inputs get focus, do something */
-.form-container input[type=text]:focus, .form-container input[type=password]:focus {
+.form-container-main input[type=text]:focus, .form-container-main input[type=password]:focus, .form-container-post input[type:text]:focus .form-container-post input[type:password]:focus {
   background-color: #ddd;
   outline: none;
 }
 
 /* Set a style for the submit/login button */
-.form-container .btn {
+.form-container-main .btn,.form-container-post .btn {
   background-color: #4CAF50;
   color: white;
   padding: 08px 12px;
@@ -74,12 +89,21 @@
 }
 
 /* Add a red background color to the cancel button */
-.form-container .cancel {
+.form-container-post .cancel {
   background-color: red;
 }
 
 /* Add some hover effects to buttons */
-.form-container .btn:hover, .open-button:hover {
+.form-container-main .btn:hover, .open-button:hover, .form-container-post .btn:hover, .open-button:hover {
   opacity: 1;
 }
 
+.name {
+	font-size: 15px;
+}
+
+.list {
+	display: block;
+}
+
+/*  div.node, div.show_form { float:left;  }  */

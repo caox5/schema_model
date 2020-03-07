@@ -12,7 +12,13 @@ document.addEventListener('click', function(e) {
 
 */
 
+function close(){
+	document.getElementById('list').style.display = 'none';
+}
+
+
  function toggleForm(id){
+	 close();
     var content_id = id + '-content';
 
     var elem=document.getElementById(content_id);
@@ -33,8 +39,23 @@ document.addEventListener('click', function(e) {
   
 
     //}
+}
+
+function open_form(id) {
+
+	var form_id = id + '-form'; 
+	var elem = document.getElementById(form_id);
+	  if (elem.style.display == "none") {
+                elem.style.display = 'block';
+                //  document.getElementsByClassName("show-more")[0].innerText = "See Less";
+
+    } else {
+                elem.style.display = 'none';
+                //  document.getElementsByClassName("show-more")[0].innerText = "See More";
+    }
 
 }
+
 //Function To Display Popup
 
 /*
@@ -56,6 +77,20 @@ function toggleForm(){
   
  });
 
+}*/
+
+/*
+var modal=document.getElementById('755771-content');
+window.onclick = function(event) {
+  if (event.target != modal) {
+    modal.style.display = "none";
+  }
 }
 
+var modal=document.getElementById('755771-content');
+window.onclick = function(event) {
+   if (!event.target.matches('#755771-content')) {
+      document.getElementById('755771-content').style.display = 'none';
+   }
+}
 */
