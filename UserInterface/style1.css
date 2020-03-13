@@ -42,7 +42,7 @@
   display: none;
   position: absolute;
   top: 0;
-  margin-right: 5px;
+  margin-right: 10em;
   margin-left: 3.5em;
   float: right;
   /*bottom: -10; */
@@ -52,8 +52,8 @@
 
 /* es to the form container */
 .form-container-main, .form-container-post {
-  max-width: 4000px;
-  padding: 01px;
+  max-width: 8000px;
+  padding: 05px;
   background-color: white;
 }
 
@@ -105,5 +105,35 @@
 .list {
 	display: block;
 }
+
+.container-root {
+    position: fixed;
+    top:  50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+
+/* ===== Select Box ===== */
+.title {
+  font-size: 1rem;
+  display: inline-block;
+  margin: 3em 2em;
+  width: 200px;
+  background-color: transparent;
+  position: relative;
+  cursor: pointer;
+}
+
+.submit {
+ background-color: #4CAF50;
+  color: white;
+  padding: 08px 12px;
+  border: none;
+  cursor: pointer;
+  float: left bottom;
+  margin-bottom:5px;
+  opacity: 0.8;
+}
+
 
 /*  div.node, div.show_form { float:left;  }  */

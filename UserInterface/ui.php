@@ -6,25 +6,63 @@ if(isset($_REQUEST['submit'])){
 		$title=$_POST['title'];
 		$e=getTopicEntries($title);
 		$t=getDiscussionTopic($title);
+		$nodes=array();
+
+echo "<pre>";
+//print_r($e);
+echo "</pre>";
+		foreach($e as $entry){	
+		//	array_push($nodes['user_name'],$entry->user_name);
+			if (empty($nodes[$entry->user_name])){
+				$nodes[$entry->user_name] = array();
+				$nodes[$entry->user_name]['id']=$entry->user->id;
+			       	$nodes[$entry->user_name]['image']=$entry->user->avatar_image_url;	
+				$nodes[$entry->user_name]['messages']=array();
+			}
+			$message=array("message"=>$entry->message,"date"=>$entry->created_at, 'id'=>$entry->id,"link"=>$entry->parent_id);
+			array_push($nodes[$entry->user_name]['messages'],$message);
+
+		}
+//print_r($nodes);
+
+		foreach($entry->recent_replies as $reply){
+			if (empty($nodes[$reply->user_name])){
+				$nodes[$reply->user_name] = array();
+				$nodes[$reply->user_name]['id']=$reply->user->id;
+			       	$nodes[$reply->user_name]['image']=$reply->user->avatar_image_url;	
+				$nodes[$reply->user_name]['messages']=array();
+			}
+			$message=array("message"=>$reply->message,"date"=>$reply->created_at,'id'=>$reply->id,"link"=>$reply->parent_id);
+			array_push($nodes[$reply->user_name]['messages'],$message);
+		}
+		
+		echo "<pre>";
+		print_r($nodes);
+		echo "</pre>";
+
+
 	}
-}
+	}
+//}
 
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 <head>
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" charset="UTF-8">
 <link rel="stylesheet" type="text/css" href="style1.css">
-<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
-<script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
-<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-<script src='script1'></script>
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="https://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script src='script.js'></script>
+
 <script type="text/javascript" language="javascript">
     var titles = new Array();
-<?php
+<?php  
         $d=getDiscussions();
-        foreach($d as $val){ ?>
+	foreach($d as $val){ ?>
         titles.push('<?php echo $val->title; ?>');
     <?php } ?>
 </script>			
@@ -34,10 +72,10 @@ if(isset($_REQUEST['submit'])){
 <body>
 <div>
 <div class='list' id='list'>
-<h1>Select Discussion Board:</h1>  
+<h3>Select Discussion Board:</h3>  
      
-<form action="ui.php" method="post">	
-<select name="title">
+<form action="ui.php" method="post">
+<select name="title" class="title" size=<?php echo count($d)?>>
 <script type="text/javascript">
       for (i=0,len=titles.length;i<len;i++) {
               document.write("<option value='" + titles[i] + "'>" + titles[i] + "</option>");
@@ -49,10 +87,11 @@ if(isset($_REQUEST['submit'])){
 </form>
 </div>
 
-<div class="container">
+<div class="container-root" id="container-root">
 	<div class="node">
-	<?php echo "<input class='circle' type='image' id='".$t->id."-logo' onclick='toggleForm(".$t->id.")' src='".$t->author->avatar_image_url."'>";
- 	echo "<br>".$t->user_name; ?>
+	<?php echo "<input class='circle' type='image' id='".$t->id."-logo' onclick='toggleForm(".$t->id.")' src='".$t->author->avatar_image_url."'>"; ?>
+<?php echo "<br>".$t->title;
+?>
 	
 </div>
 <div class="show_form" id="<?php echo $t->id;?>-content">
@@ -75,63 +114,38 @@ if(isset($_REQUEST['submit'])){
 </div>
 </div>
 
+
 <?php		
-foreach($e as $entry){ ?>
+foreach($nodes as $key=>$node){ ?>
 <div class="container">
 	<div class="node">		
-	<?php echo "<input class='circle' type='image' id='".$entry->id."-logo' onclick='toggleForm(".$entry->id.")' src='".$entry->user->avatar_image_url."'>";  ?>		
-	<?php echo "<br>".$entry->user_name;?>
+	<?php echo "<input class='circle' type='image' id='".$node['id']."-logo' onclick='toggleForm(".$node['id'].")' src='".$node['image']."'>";  ?>		
+	<?php echo "<br>".$key;  ?>
 </div>
-<div class="show_form" id="<?php echo $entry->id;?>-content"> 
-<form class="form-container-main" action="javascript:void(0);">    
-   <label for="post"><b><?php echo $entry->user_name;?></b></label> 
-    <p><?php echo $entry->message;?></p>  
-    <button type="submit" class="btn" onclick="open_form(<?php echo $entry->id;?>)">Reply</button>
-    <button type="submit" class="btn" onclick="open_form(<?php echo $entry->id;?>)">Comment</button>
-    <button type="submit" class="btn" onclick="open_form(<?php echo $entry->id;?>)">Solution</button>
-    <button type="submit" class="btn" onclick="open_form(<?php echo $entry->id;?>)">Discussion</button>
-</form><br>
-<div class="open_form" id='<?php echo $entry->id; ?>-form'>
-    <form action="#" class="form-container-post" id="<?php echo $entry->id;?>-post">
+
+<div class="show_form" id="<?php echo $node['id'];?>-content"> 
+	<?php foreach($node['messages'] as $message){ ?>
+	<form class="form-container-main" action="javascript:void(0);">    
+	   <label for="post"><b><?php echo $key;?></b></label> 
+	    <p><?php echo $message['message'];?></p>  
+	    <button type="submit" class="btn" onclick="open_form(<?php echo $message['id'];?>)">Reply</button>
+	    <button type="submit" class="btn" onclick="open_form(<?php echo $message['id'];?>)">Comment</button>
+	    <button type="submit" class="btn" onclick="open_form(<?php echo $message['id'];?>)">Solution</button>
+	    <button type="submit" class="btn" onclick="open_form(<?php echo $message['id'];?>)">Discussion</button>
+	</form><br>
+<div class="open_form" id='<?php echo $message['id']; ?>-form'>
+    <form action="#" class="form-container-post" id="<?php echo $message['id'];?>-post">
     	<label for="psw"><b>Enter Post</b></label><br>
     	<input type="text" placeholder="Enter Post" name="post" required>
     	<button type="submit" class="btn" onclick="enterPost()">Post</button>
-    	<button type="submit" class="btn cancel" onclick="toggleForm(<?php echo $entry->id;?>)">Cancel</button>
+    	<button type="submit" class="btn cancel" onclick="toggleForm(<?php echo $message['id'];?>)">Cancel</button>
     </form>
 </div>
+	<?php } ?>
 </div>
 </div>
 <?php }  ?>
 
-
-<?php	
-foreach($entry->recent_replies as $r){ ?>
-<div class="container">
-	<div class="node">        
-	<?php echo "<input class='circle' type='image' id='".$r->id."-logo' onclick='toggleForm(".$r->id.")' src='".$r->user->avatar_image_url."'>"; ?> 	
-	<?php echo "<br>".$r->user_name;?>
-</div>
-<div class="show_form" id="<?php echo $r->id;?>-content">
-<form class="form-container-main" action="javascript:void(0);">
-    <label for="post"><b><?php echo $r->user_name;?></b></label> 
-    <p><?php echo $r->message;?></p>	
-    <button type="submit" class="btn" onclick="open_form(<?php echo $r->id;?>)">Reply</button>
-    <button type="submit" class="btn" onclick="open_form(<?php echo $r->id;?>)">Comment</button>
-    <button type="submit" class="btn" onclick="open_form(<?php echo $r->id;?>)">Solution</button>
-    <button type="submit" class="btn" onclick="open_form(<?php echo $r->id;?>)">Discussion</button>
-</form><br>
-<div class="open_form" id='<?php echo $r->id; ?>-form'>
-    <form action="#" class="form-container-post" id="<?php echo $r->id;?>-post">
-    	<label for="psw"><b>Enter Post</b></label><br>
-    	<input type="text" placeholder="Enter Post" name="post" required>
-    	<button type="submit" class="btn" onclick="">Post</button>
-    	<button type="submit" class="btn cancel" onclick="toggleForm(<?php echo $r->id;?>)">Cancel</button>
-  </form>
-  </div>
-</div>	
-</div>		
-<?php	} ?>
-	
 
 
 </div>
