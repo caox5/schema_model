@@ -19,7 +19,11 @@ echo "</pre>";
 			       	$nodes[$entry->user_name]['image']=$entry->user->avatar_image_url;	
 				$nodes[$entry->user_name]['messages']=array();
 			}
-			$message=array("message"=>$entry->message,"date"=>$entry->created_at, 'id'=>$entry->id,"link"=>$entry->parent_id);
+			if(empty($nodes[$entry->user_name]['messages']['link'])){
+				$message=array("message"=>$entry->message,"date"=>$entry->created_at, 'id'=>$entry->id,"link"=>$t->id);
+			} else
+				$message=array("message"=>$entry->message,"date"=>$entry->created_at, 'id'=>$entry->id,"link"=>$entry->parent_id);
+
 			array_push($nodes[$entry->user_name]['messages'],$message);
 
 		}
@@ -87,6 +91,20 @@ echo "</pre>";
 </form>
 </div>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <div class="container-root" id="container-root">
 	<div class="node">
 	<?php echo "<input class='circle' type='image' id='".$t->id."-logo' onclick='toggleForm(".$t->id.")' src='".$t->author->avatar_image_url."'>"; ?>
@@ -113,6 +131,16 @@ echo "</pre>";
 </div>
 </div>
 </div>
+
+
+
+
+
+
+
+
+
+
 
 
 <?php		

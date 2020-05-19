@@ -1,11 +1,11 @@
 $(document).ready(function () {
 
 		id= 119626;
-		topic_id = 837117;
-		entry_id = 3509614;
-	//	title="new post";
-		message="hi there";
-		rating = 1
+		topic_id = 755771;
+		entry_id = 3197834;
+		title="new reply";
+		message='"discussion reply"';
+		rating = 1;
 	$("#msg").click(function(){
 	//		createDiscussion(id,title,message);
 	//	getDiscussionTopic(id,topic_id);
@@ -14,12 +14,12 @@ $(document).ready(function () {
 	//	getAllCourses();	
 	//	getCourse(id);
 	//	getAllTopicEntries(id,topic_id);
-	//	createDiscussionTopicEntry(id,topic_id,message);	
+		createDiscussionTopicEntry(id,topic_id,message);	
 	//	updateDiscussionTopicEntries(id,topic_id,entry_id,message);
-	//	deleteDiscussionTopicEntry(id,topic_id,entry_id);
+	//	deleteDiscussionTopicEntries(id,topic_id,entry_id);
 	//	getDiscussionEntryReplies(id,topic_id,entry_id);
-	//	createDiscussionEntryReply(id,topic_id,entry_id,message);
-		rateEntry(id,topic_id,entry_id,rating);
+	//	createDiscussionEntryReplies(id,topic_id,entry_id,message);
+	//	rateEntry(id,topic_id,entry_id,rating);
 	});
 
 });
@@ -107,6 +107,7 @@ function updateDiscussion(course_id,topic_id,title,message) {
         }});
 }
 
+//not working properly
 function createDiscussionTopicEntry(course_id,topic_id,message) {
         $.ajax({
                 url: apiUrl+'courses/'+course_id+'/discussion_topics/'+topic_id+'/entries',
@@ -115,11 +116,12 @@ function createDiscussionTopicEntry(course_id,topic_id,message) {
                 data: JSON.stringify({message: message}),
                 dataType: 'json',
                 success: function (data,textStatus,xhr) {
+		//	JSON.parse(data);
                         console.log(data);
+			callback();
 		 },
                 error: function(jqXHR,error,errorThrown){
                        console.log(errorThrown);
-			console.log(jqXHR.responseText);
         }});
 }
 
@@ -139,48 +141,43 @@ function updateDiscussionTopicEntries(course_id,topic_id,entry_id,message) {
 }
 
 //not working properly
-function deleteDiscussionTopicEntry(course_id,topic_id,entry_id) {
+function deleteDiscussionTopicEntries(course_id,topic_id,entry_id) {
         $.ajax({
                 url: apiUrl+'courses/'+course_id+'/discussion_topics/'+topic_id+'/entries/'+entry_id,
-                method: "DELETE",
+                method: "delete",
                 headers: {"Content-Type": "application/json"},
                 success: function (data) {
                         console.log(data);
                 },
-                error: function(jqXHR,error,errorThrown){
-                        console.log(errorThrown);
-			console.log(jqXHR.responseText);
+                error: function(error){
+                        console.log("Error on ajax fetch");
         }});
 }
 
 function getDiscussionEntryReplies(course_id,topic_id,entry_id) {
         $.ajax({
-                url: apiUrl+"courses/"+course_id+"/discussion_topics/"+topic_id+"/entries/"+entry_id+"/replies",
+                url: apiUrl+'courses/'+course_id+'/discussion_topics/'+topic_id+"/entries/"+entry_id+'/replies',
                 method: "get",
                 headers: {"Content-Type": "application/json"},
                 success: function (data) {
-               		 console.log(data);
-		},
-                error: function(jqXHR,error,errorThrown){
-                        console.log(errorThrown);
-                        console.log(jqXHR.responseText);
+                console.log(data);
         }});
 }
 
 //not working
-function createDiscussionEntryReply(course_id,topic_id,entry_id,message) {
+function createDiscussionEntryReplies(course_id,topic_id,entry_id,message) {
         $.ajax({
                 url: apiUrl+'courses/'+course_id+'/discussion_topics/'+topic_id+'/entries/'+entry_id+'/replies',
-                method: 'POST',
+                method: "POST",
                 headers: {"Content-Type": "application/json"},
                 data: JSON.stringify({message: message}),
                 dataType: 'json',
-                success: function (data,textStatus,xhr) {
+                success: function (data) {
                         console.log(data);
                 },
-                error: function(jqXHR,error,errorThrown){
-                        console.log(errorThrown);
-                        console.log(jqXHR.responseText);
+                error: function(error){
+                        console.log("Error on ajax fetch");
+			//console.log(error);
         }});
 }
 
@@ -188,25 +185,14 @@ function createDiscussionEntryReply(course_id,topic_id,entry_id,message) {
 function rateEntry(course_id,topic_id,entry_id,rating) {
         $.ajax({
                 url: apiUrl+'courses/'+course_id+'/discussion_topics/'+topic_id+'/entries/'+entry_id+'/rating',
-                method: 'POST',
+                method: "post",
                 headers: {"Content-Type": "application/json"},
                 data: JSON.stringify({rating: rating}),
                 dataType: 'json',
-                success: function (data,textStatus,xhr) {
+                success: function (data) {
                         console.log(data);
+                },
+                error: function(error){
+                        console.log("Error on ajax fetch");
         }});
 }
-
-
-function nodes(course_id,topic_id){
-
-
-
-}
-
-
-
-
-
-
-
