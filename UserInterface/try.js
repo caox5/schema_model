@@ -677,19 +677,46 @@ var pageY = d3.event.pageY
   function loadTooltipContent(node) {
 	//  console.log(node);
 	getUserEntries(course_id,topic_id,node.user_id,function(output){
-      
+     			var deg;
+			var degree=degreeCent(graph);
+//			console.log(degree);
+var betweenness = jsnx.betweennessCentrality(G);
+//var eigenvector = jsnx.eigenvectorCentrality(G);
+var clustering = jsnx.clustering(G);
+between=betweenness._numberValues;
+clust=clustering._numberValues;
+for(b in between){
+	if(node.user_id == b) bet=between[b];
+}
+for(c in clust){
+	if(node.user_id == c) clu=clust[c];
+}
+for (var d in degree){
+//console.log(d);
+//console.log(degree[d]);
+	if(node.user_id == d) deg=degree[d];
+}
+
 		console.log(output);
 		var htmlContent= "";
 		htmlContent += "<div>";
       htmlContent += "<h4>" + output.name +"  "+"<img width=20 height=20 src='"+output.image+"'><\/h4>";
+		htmlContent+="Degree Centrality: "+deg+"<br>";
+		htmlContent+="Betweenness Centrality: "+bet+"<br>";
+		htmlContent+="Clustering Coefficient: "+clu+"<br>";
+
+
 //      htmlContent += "<img width=10 height=10 src='"+output.image+"'><br>"
 	posts=output.posts;
 	posts.forEach(pf);
 		
 		function pf(item,index){
 //			console.log(item);
+					
+		
       htmlContent += "<form method=\"post\" action=\"\">"
 	htmlContent +="Date: <i>"+item.created_at+"</i><br>"     
+//	htmlContent+="Degree: "+deg
       htmlContent += "Post: "+item.post+"<br><br>"
 
       htmlContent += "<button id='\"reply'+index+'\">Reply</button>"
