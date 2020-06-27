@@ -39,7 +39,7 @@
 
 /* The popup form - hidden by default */
 .show_form {
-  display: none;
+/*  display: none;  */
   position: absolute;
   top: 0;
   margin-right: 10em;
