@@ -1,24 +1,6 @@
 $(document).ready(function () {
 
-	//	id= 119626;
-	//	topic_id = 903292;
-	//	entry_id = 3509614;
-	//	title="new post";
-	//	message="hi there";
-	//	rating = 1;
-	//	createDiscussion(id,title,message);
-	//	getDiscussionTopic(id,topic_id);
-	//	updateDiscussion(id,topic_id,title,message);
-	//	getDiscussionsByCourseID(id);
 		showAllCourses();
-	//	getCourse(id);
-	//	getAllTopicEntries(id,topic_id);
-	//	createDiscussionTopicEntry(id,topic_id,message);	
-	//	updateDiscussionTopicEntries(id,topic_id,entry_id,message);
-	//	deleteDiscussionTopicEntry(id,topic_id,entry_id);
-	//	getDiscussionEntryReplies(id,topic_id,entry_id);
-	//	createDiscussionEntryReply(id,topic_id,entry_id,message);
-	//	rateEntry(id,topic_id,entry_id,rating);
 });
 
 
@@ -69,8 +51,6 @@ $.each(output.discussions_topics,function(k,v){
 	}
 
 function createDiscussion(course_id,title,message) {
-//var title = $('#discussionForm').find('input[name="dtitle"]').val();  
-//var message = $('#discussionForm').find('input[name="dmessage"]').val();  
 
 $.ajax({
                 url: apiUrl+'courses/'+course_id+'/discussion_topics',
@@ -97,14 +77,6 @@ $.ajax({
   	//		$("#t_name").append("<p>"+text);
 		});
 			});
-	//		$("#t_name").append("<p>"+data.title);
-		//	location.replace(location.pathname);
-			//location.refresh();
-//			showDiscussions(course_id,function(d){
-//				$("#dlist").empty().append(d);
-//			console.log(d);
-//			});
-			//			
                 },
                 error: function(error){
                         console.log("Error on ajax fetch");
@@ -130,7 +102,6 @@ function getDiscussionTopic(course_id,topic_id,callback) {
                 method: "get",
                 headers: {"Content-Type": "application/json"},
                 success: function (data) {
-//			console.log(data);
              		callback(data);   
 		
         }});
@@ -148,17 +119,12 @@ function getAllCourses(callback) {
 
 function showAllCourses(callback){
 	getAllCourses(function(output){
-		
 		$.each(output.courses,function(k,v){
-
 			$("#course").append("<br><button  name='course-btn' value='"+v.name+"' onclick='showDiscussions("+v.id+")'>"+v.name+"</button>");
-		
-		//console.log(v.name);
 		});	
 		$("body").on('click',"button[name=course-btn]",function(){
 			var text=$(this).attr("value");
 
-			//console.log(v.name);
 			$("#c_name").append("<p>"+text);
 			$("#c").hide();
 		});
@@ -175,105 +141,40 @@ function getCourse(course_id) {
         }});
 }
 
-//window.nodes=[];
-
 function showAllData(course_id,topic_id,callback){
 	$("#d").hide();
 	var alldata={};
 	var d={};
 	getNodes(course_id,topic_id,function(output){
-//	for(i=0;i<output.length;i++){
-//		n.push(output[i]);
-//		}
 	alldata['nodes'] = output;
-//	mapUserPost(course_id,topic_id);
 	getLinks(course_id,topic_id,function(data){
 		alldata['links'] = data;
 		var graph={};
 		var d={};
 		graph=alldata;
-//		graph=JSON.stringify(d);
-//		graph = JSON.stringify(d);
-//		var graph=JSON.stringify(d);
-//console.log(graph.links);
-//links=JSON.stringify(graph.links).slice()
-//var nodes = graph.nodes;		
-//console.log(links);
-//console.log(nodes);
-//var width=960,height=600;	
 var links=graph.links,
 	nodes=graph.nodes;
 
-
-//links.sort(function(a,b) {
-//    if (a.source > b.source) {return 1;}
-//    else if (a.source < b.source) {return -1;}
-//    else {
-//        if (a.target > b.target) {return 1;}
-//        if (a.target < b.target) {return -1;}
-//        else {return 0;}
-//    }
-//});
-//any links with duplicate source and target get an incremented 'linknum'
-//for (var i=0; i<links.length; i++) {
-//    if (i != 0 &&
-//        links[i].source == links[i-1].source &&
-//        links[i].target == links[i-1].target) {
-//            links[i].linknum = links[i-1].linknum + 1;
-//        }
-//    else {links[i].linknum = 1;};
-//};
-		
 var nodeMap = {};
             nodes.forEach(function(x) { nodeMap[x.user_id] = x; });
-            links = links.map(function(x) {
+		if(links){
+		links = links.map(function(x) {
                 return {
                     source: nodeMap[x.source],
                     target: nodeMap[x.target],
                 };
             });
-
-//console.log(nodes);
-//		console.log(links);
-
-
-
-//var nodeHash = {};
-//  var edgeHash = {};
-//  var n = [];
-//  var e = [];
-
-//  links.forEach(function (edge) {
-//    if (!nodeHash[edge.source]) {
-//      nodeHash[edge.source] = {id: edge.source, label: edge.source};
-//      n.push(nodeHash[edge.source]);
-//      e.push({id: nodeHash[edge.source].id + "-" + nodeHash[edge.target].id, source: nodeHash[edge.source], target: nodeHash[edge.target]});
-//    }
-//    if (!nodeHash[edge.target]) {
-//      nodeHash[edge.target] = {id: edge.target, label: edge.target};
-//      n.push(nodeHash[edge.target]);
-//      e.push({id: nodeHash[edge.source].id + "-" + nodeHash[edge.target].id, source: nodeHash[edge.source], target: nodeHash[edge.target]});    }
-//    if (edge.weight == 5) {
-//      e.push({id: nodeHash[edge.source].id + "-" + nodeHash[edge.target].id, source: nodeHash[edge.source], target: nodeHash[edge.target]});
-//    }
-//  });
-
-
+		}
+	
 
 var node_data = nodes.map(function (d) {return d.user_id});
 var edge_data = links.map(function (d) {return [d.source.user_id, d.target.user_id]; });
 
 
-console.log(node_data);
-console.log(edge_data);
-
 var G = new jsnx.Graph();
 G.addNodesFrom(node_data);
 G.addEdgesFrom(edge_data);
 
-var betweenness = jsnx.betweennessCentrality(G);
-//var eigenvector = jsnx.eigenvectorCentrality(G);
-var clustering = jsnx.clustering(G);
 
 var degreeCent = function(g) {
   var counts;
@@ -299,14 +200,12 @@ var degreeCent = function(g) {
 };
 
 var degree=degreeCent(graph);
-console.log(betweenness);
-console.log(clustering);
-console.log(degree);
+
 // Toggle for ego networks on click (below).
 var toggle = 0;
 
-// Make object of all neighboring nodes.
-  var linkedByIndex = {};
+
+ var linkedByIndex = {};
   graph.links.forEach(function(d) {
 	  linkedByIndex[d.source + ',' + d.target] = 1;
 	  linkedByIndex[d.target + ',' + d.source] = 1;
@@ -316,6 +215,7 @@ var toggle = 0;
   function neighboring(a, b) {
 	  return linkedByIndex[a.index + ',' + b.index];
   }
+
 
 
 var colors = d3.scaleOrdinal(d3.schemeCategory10);
@@ -368,13 +268,6 @@ nodes.forEach(function(d, i) {
     .attr("y", 0);
 
 
-//g.append("circle")
-//    .attr("transform", "translate(" + 100 + "," + 100 + ")")
-//    .attr("cx", 20)
-//    .attr("cy", 20)
-//    .attr("r", 20)
-//    .style("fill", "#fff")
-//    .style("fill", "url(#grump_avatar"+i);	
 });
 
 //sort links by source, then target
@@ -407,12 +300,15 @@ for (var i=0; i<links.length; i++) {
         var same = _.filter(links, {
             'source': link.source,
             'target': link.target
+//		'post_id':link.post_id
         });
         var sameAlt = _.filter(links, {
             'source': link.target,
             'target': link.source
+//		'post_id':link.post_id
         });
         var sameAll = same.concat(sameAlt);
+	 
 //console.log(sameAll);
         _.each(sameAll, function(s, i) {
             s.sameIndex = (i + 1);
@@ -438,35 +334,13 @@ for (var i=0; i<links.length; i++) {
     });
 
 
+
+
+
+
 function linkArc(d) {
 	if(d.source.x === d.target.x && d.source.y === d.target.y){
 	
-
-
-//       var dx = (d.target.x - d.source.x),
-//            dy = (d.target.y - d.source.y),
-//            dr = Math.sqrt(dx * dx + dy * dy),
-//		dr=75/d.linknum;
-//            unevenCorrection = (d.sameUneven ? 0 : 0.5),
-//           arc1 = ((20 * d.maxSameHalf) / (d.sameIndexCorrected + unevenCorrection));
-//arc=dr;
-
-//           arc2 = ((35 * d.maxSameHalf) / (d.sameIndexCorrected - unevenCorrection));        if (d.sameMiddleLink) {
-//            arc = 0;
-//        }
-
-
-
-// var index = getIndexOfDuplicateEdge();
-//    var degree = 360 / numberOfDuplicateEdges();
-//    var degreeForIndex = degree * index;		
-
-	
-
-//        return "M" + d.source.x + "," + d.source.y + "A" + arc1 + "," + arc2 + '"'+degreeForIndex+ " 1," + 
-//						d.sameArcDirection + " " 
-			
-//			+ d.target.x + "," + d.target.y;
 
 
 
@@ -537,19 +411,20 @@ function linkArc(d) {
         .force("link", d3.forceLink().id(function (d) {return d.name;}).strength(0.003))
         .force("charge", d3.forceManyBody().strength([-120]).distanceMax([100]))
 	.force("collide",d3.forceCollide().radius(5))
-        .force("center", d3.forceCenter(width / 2, height / 2));
+        .force("center", d3.forceCenter(width / 2, height / 2))
+            .on("tick", ticked);
 
-
+// Terminate the force layout when this cell re-runs.
+//  invalidation.then(() => simulation.stop());
   
         update(links, nodes);
     
 
+
+
+
+
     function update(links, nodes) {
-   //     link = svg.selectAll(".link")
-   //         .data(links)
-   //         .enter()
-   //         .append("line")
-   //         .attr("class", "link")
 	    
 // add tooltip to HTML body
   var tooltip = d3.select("body")
@@ -566,19 +441,72 @@ function linkArc(d) {
     .text("");
 
 
+
+        node = svg.selectAll(".node")
+            .data(nodes)
+	    .enter()
+            .append("g")
+            .attr("class", "node")
+            .call(d3.drag()
+                    .on("start", dragstarted)
+                    .on("drag", dragged)
+                    .on("end", dragended)
+            );
+
+
+        node.append("circle")
+	    .attr("cx",20)
+        .attr("cy", 20)
+	    .attr("r",20)
+	    .attr("preserveAspectRatio","xMidYMid slice")
+	    .on("click",clickNode)
+        .style("fill", "#fff")
+        .style("fill", 
+	function(d,i){ 
+		if(d.image!==""){
+		return "url(#grump_avatar"+i+")"; } 
+		else
+		{
+			return colors("#54d");
+		}
+	}	
+	);
+
+        node.append("title")
+            .text(function (d) {return d.user_id;});
+
+        node.append("text")
+            .attr("dy", -3)
+            .text(function (d) {return d.name})
+		.merge(node);
+node.exit().remove();
+
+//	    node.merge(node);
+
+
+
+
+
 	    link = svg.selectAll(".link")
-    .data(links, function(d) { return d.source + ", " + d.target;}).enter().append("path")
+    .data(links, function(d) { return d.source + ", " + d.target;})
+		.enter().append("path")
     .attr("class", "link")
    .attr('marker-end','url(#arrowhead)');
 
-    
+   
 
-        link.append("title")
-            .text(function (d) {return d.type;});
+        link
+		   .append("title")
+            .text(function (d) {return d.type;})
+		.merge(link);
+	    link.exit().remove();
 
-        edgepaths = svg.selectAll(".edgepath")
+//	    .merge(link);
+		
+        
+	    edgepaths = svg.selectAll(".edgepath")
             .data(links)
-            .enter()
+		    .enter()
             .append('path')
             .attrs({
                 'class': 'edgepath',
@@ -586,7 +514,9 @@ function linkArc(d) {
                 'stroke-opacity': 0,
                 'id': function (d, i) {return 'edgepath' + i}
            })
-            .style("pointer-events", "none");
+            .style("pointer-events", "none")
+//	.merge(edgepaths);
+
 
         edgelabels = svg.selectAll(".edgelabel")
             .data(links)
@@ -598,31 +528,48 @@ function linkArc(d) {
                 'id': function (d, i) {return 'edgelabel' + i},
                 'font-size': 10,
                 'fill': '#aaa'
-            });
+            })
+		   // .merge(edgelabels);
 
-//        edgelabels.append('textPath')
-//            .attr('xlink:href', function (d, i) {return '#edgepath' + i})
-//            .style("text-anchor", "middle")
-//            .style("pointer-events", "none")
-//            .attr("startOffset", "50%")
-//            .text(function (d) {return d.type});
+        simulation
+            .nodes(nodes);
 
-        node = svg.selectAll(".node")
-            .data(nodes)
-            .enter()
-            .append("g")
-            .attr("class", "node")
-            .call(d3.drag()
-                    .on("start", dragstarted)
-                    .on("drag", dragged)
-                    .on("end", dragended)
-            );
+        simulation.force("link")
+            .links(links);
+	
+	//simulation.alpha(1).restart();
 
 
-//console.log(node);
+
+	    
+	    
+	    
+	    //console.log(node);
 
 // keep track of if tooltip is hidden or not
   var isTooltipHidden = true;
+
+
+
+function postNode(){
+	
+	var htmlContent= "";
+		htmlContent += "<div>";
+//      htmlContent += "<h4>" + output.name +"  "+"<img width=20 height=20 src='"+output.image+"'><\/h4>";
+
+      htmlContent += "<form method=\"post\"  action=\"\">"
+	htmlContent +="Post: <textarea id=\"postText\" class=\"text\" cols=\"30\" rows =\"4\" name=\"postText\"></textarea><br>"     
+//	htmlContent+="Degree: "+deg
+      htmlContent += "<button name=\"reply\" value=\"Reply\">Reply</button>"
+      htmlContent += "<\/form>"
+   
+   	htmlContent += "<\/div>"	
+      tooltip.html(htmlContent);
+
+
+}
+
+
 
 function clickNode(node) {
        // update visibility
@@ -675,8 +622,10 @@ var pageY = d3.event.pageY
 
   // add html content to tooltip
   function loadTooltipContent(node) {
-	//  console.log(node);
-	getUserEntries(course_id,topic_id,node.user_id,function(output){
+//	  console.log(node);
+	  id=node.user_id;
+	  getUserEntries(course_id,topic_id,id,function(output){
+//		console.log(output);
      			var deg;
 			var degree=degreeCent(graph);
 //			console.log(degree);
@@ -697,158 +646,152 @@ for (var d in degree){
 	if(node.user_id == d) deg=degree[d];
 }
 
-		console.log(output);
+//		console.log(output);
 		var htmlContent= "";
-		htmlContent += "<div>";
+		htmlContent += "<div id=\"container-main\">";
       htmlContent += "<h4>" + output.name +"  "+"<img width=20 height=20 src='"+output.image+"'><\/h4>";
 		htmlContent+="Degree Centrality: "+deg+"<br>";
 		htmlContent+="Betweenness Centrality: "+bet+"<br>";
-		htmlContent+="Clustering Coefficient: "+clu+"<br>";
+		htmlContent+="Clustering Coefficient: "+clu+"<br><br>";
 
 
 //      htmlContent += "<img width=10 height=10 src='"+output.image+"'><br>"
+var entries=[];
+getLinks(course_id,topic_id,function(n){
+	getNodes(course_id,topic_id,function(x){
+	for(i=0;i<n.length;i++){
+		entry={};
+	entry['source']=n[i].source;
+	entry['target']=n[i].target;
+	entry['post_id']=n[i].post_id;
+	entry['post']=n[i].post;
+		entries.push(entry);
+}
+//});
+nodeNames=[];
+for(j=0;j<x.length;j++){
+	nn={};
+	nn['user_id']=x[j].user_id;
+	nn['name']=x[j].name;
+	nodeNames.push(nn);
+}
 	posts=output.posts;
-	posts.forEach(pf);
-		
+posts.forEach(pf);
+//entries.forEach(ent);
 		function pf(item,index){
-//			console.log(item);
-					
-		
-      htmlContent += "<form method=\"post\" action=\"\">"
+			for(i=0;i<entries.length;i++){
+			if(entries[i].post_id==item.entry_id){ 
+				var posted_to=entries[i].target;
+				//console.log(posted_to);
+				for(j=0;j<nodeNames.length;j++){
+					if(posted_to){
+					if(posted_to==nodeNames[j].user_id){
+						var name=nodeNames[j].name;
+					}}
+					else var name="Discussion Board";
+				}
+			}
+			}
+htmlContent+="<div id='container-post-"+index+"'>"		
+      htmlContent += "<form id='postForm-"+index+ "' method=\"post\">"
 	htmlContent +="Date: <i>"+item.created_at+"</i><br>"     
-//	htmlContent+="Degree: "+deg
-      htmlContent += "Post: "+item.post+"<br><br>"
+      htmlContent+="Posted to: "+name+"</br>"
+	htmlContent+="<span id="+item.entry_id+">"
 
-      htmlContent += "<button id='\"reply'+index+'\">Reply</button>"
-      htmlContent += "<button name=\"Comment\">Comment</button>"	
-      htmlContent += "<button name=\"Discuss\" value=\"Discuss\">Discuss</button>"
-      htmlContent += "<button name=\"Solve\" value=\"Solve\">Solve</button>"	
+	htmlContent += "Post: "+item.post+"</span><br>"
+
+      htmlContent += "<input type=\"button\" class=\"reply-btn\" value=\"Reply\">"
+      htmlContent += "<button name=\"comment-btn\">Comment</button>"	
+      htmlContent += "<button name=\"discuss-btn\" value=\"Discuss\">Discuss</button>"
+      htmlContent += "<button name=\"solve-btn\" value=\"Solve\">Solve</button>"	
 
       htmlContent += "<\/form>"
-   
+   htmlContent+="</div>"
+//		});
 	}
+//});
+//});
    htmlContent += "<\/div>"	
       tooltip.html(htmlContent);
+
+
+		$(".reply-btn").on('click',function(){
+			//var text=$(this).attr("value");
+			//(this).form
+			var parent_id = $(this).parent().parent().attr('id');
+// console.log(parent_id);
+	var htmlC= "";
+		htmlC += "<div>";
+//      htmlContent += "<h4>" + output.name +"  "+"<img width=20 height=20 src='"+output.image+"'><\/h4>";
+
+      htmlC += "<form id=\"replyForm\" method=\"post\">"
+	htmlC +="<textarea id=\"postText\" class=\"text\" cols=\"40\" rows =\"4\" name=\"postText\"></textarea><br>"     
+//	htmlContent+="Degree: "+deg
+      htmlC += "<input type=\"submit\" class=\"reply\" value=\"Reply\">"
+      htmlC+="<input type=\"button\" class=\"cancel\" value=\"Cancel\">"
+      htmlC += "<\/form>"
+   
+   	htmlC += "<\/div>"	
+	$('#'+parent_id).append(htmlC);
+   //   tooltip.html(htmlContent);
+
+		
+$('#replyForm').submit(function(e) {
+	e.preventDefault();
+    // get all the inputs into an array.
+    var $inputs = $('#replyForm :input');
+    // not sure if you wanted this, but I thought I'd add it.
+    // get an associative array of just the values.
+    var values = {};
+    $inputs.each(function() {
+        values[this.name] = $(this).val();
+    });
+	var names={};
+	$inputs.each(function(){
+		names[this.value]=$(this).val();
 	});
+var reply=values['postText'];
+var rel_type=names['Reply'];
+console.log(rel_type);
+var entry_id=$(this).parent().siblings('form').children('span').attr('id');
+	if(entry_id==topic_id){
+	createDiscussionTopicEntry(course_id,topic_id,reply);
+		$(this).parent().hide();
+	$(".tooltip").hide();
+		$("#graph").empty();
+		$(".tooltip").remove();
+		showAllData(course_id,topic_id,callback);
+//		simulation.stop();
+ // simulation.alphaTarget(1).restart();
+	}		
+	else{
+	createDiscussionEntryReply(course_id,topic_id,entry_id,reply);
+		$(this).parent().hide();
+//d3.selectAll("svg > *").remove();
+		$(".tooltip").hide();
+		$("#graph").empty();
+		$(".tooltip").remove();
+		showAllData(course_id,topic_id,callback);
+		}
+});
+
+$('.cancel').click(function() {
+    $(this).parent().hide();
+});
+
+	});
+});
+});
+});
   }
 
 
-// Linear scale for degree centrality.
-  var degreeSize = d3.scaleLinear()
-  	.domain([d3.min(graph.nodes, function(d) {return d.degree; }),d3.max(graph.nodes, function(d) {return d.degree; })])
-  	.range([8,25]);
-
-
-        node.append("circle")
-	    // Calculate degree centrality within JavaScript.
- //   .attr("r", function(d, i) { count = 0; graph.links.forEach(function(l) { if (l.source == i || l.target == i) { count += 1;}; }); return size(count);})
-	    .attr("cx",20)
-        .attr("cy", 20)
-	    .attr("r",20)
-	    .attr("preserveAspectRatio","xMidYMid slice")
-	    .on("click",clickNode)
-		    
-		   // function(d){getUserEntries(course_id,topic_id,d.user_id,function(n){
-//		   	console.log(n);
-
-		   
-	    
-//	clickNode(n);	
-
-
-//	    });
-//	    })
-        .style("fill", "#fff")
-        .style("fill", 
-	function(d,i){ 
-		if(d.image!==""){
-		return "url(#grump_avatar"+i+")"; } 
-		else
-		{
-			return colors("#54d");
-		}
-	}	
-
-		//var container = svg.append('g');var container = svg.append('g');	"url(#grump_avatar1)"
-	);
-//node.forEach(function(d,i){
-//        d.append("circle")
-//	    .attr("cx",20)
-//        .attr("cy", 20)
-//       .attr("r", 20)
-//	    .attr("preserveAspectRatio","xMidYMid slice")
-//        .style("fill", "#fff")
-//        .style("fill", "url(#grump_avatar"+i+")");
-
-//});
-
-
-        node.append("title")
-            .text(function (d) {return d.user_id;});
-
-        node.append("text")
-            .attr("dy", -3)
-            .text(function (d) {return d.name});
-
-        simulation
-            .nodes(nodes)
-            .on("tick", ticked);
-
-        simulation.force("link")
-            .links(links);
-    }
+}
+    
 
     function ticked() {
 
         link.attr("d",linkArc);
-       //     .attr("x1", function (d) {return d.source.x;})
-       //     .attr("y1", function (d) {return d.source.y;})
-       //     .attr("x2", function (d) {return d.target.x;})
-       //     .attr("y2", function (d) {return d.target.y;});
-//	    .attr("d", function(d) {
-
-//	     var x1 = d.source.x,
-//      y1 = d.source.y,
-//      x2 = d.target.x,
-//      y2 = d.target.y,
-//      dx = x2 - x1,
-//      dy = y2 - y1,
-//      dr = Math.sqrt(dx * dx + dy * dy),
-
-      // Defaults for normal edge.
-//      drx = dr,
-//      dry = dr,
-//      xRotation = 0, // degrees
-//      largeArc = 0, // 1 or 0
-//      sweep = 1; // 1 or 0
-
-    // Self edge.
-//    if (x1 === x2 && y1 === y2) {
-      // Fiddle with this angle to get loop oriented.
-//      xRotation = -45;
-
-      // Needs to be 1.
-//      largeArc = 1;
-
-      // Change sweep to change orientation of loop. 
-      //sweep = 0;
-
-      // Make drx and dry different to get an ellipse
-      // instead of a circle.
-//      drx = 20;
-//      dry = 40;
-
-      // For whatever reason the arc collapses to a point if the beginning
-      // and ending points of the arc are the same, so kludge it.
-//      x2 = x2 + 1;
-//      y2 = y2 + 1;
-//    }
-	
-
-//    return "M" + x1 + "," + y1 + "A" + drx + "," + dry + " " + xRotation + "," + largeArc + "," + sweep + " " + x2 + "," + y2;
- 
-
-//    });
 
         node
             .attr("transform", function (d) {return "translate(" + d.x + ", " + d.y + ")";});
@@ -856,20 +799,6 @@ for (var d in degree){
         edgelabels.attr('d', function (d) {
             return 'M ' + d.source.x + ' ' + d.source.y + ' L ' + d.target.x + ' ' + d.target.y;
         });
-
-//        edgelabels.attr('transform', function (d) {
- //           if (d.target.x < d.source.x) {
-//                var bbox = this.getBBox();
-
-//                rx = bbox.x + bbox.width / 2;
-//                ry = bbox.y + bbox.height / 2;
-//                return 'rotate(180 ' + rx + ' ' + ry + ')';
-//            }
-//            else {
-//                return 'rotate(0)';
-//            }
-    
-//	});
 
 
     }
@@ -894,21 +823,9 @@ for (var d in degree){
 function zoomed() {
 	  container.attr("transform", "translate(" + d3.event.transform.x + ", " + d3.event.transform.y + ") scale(" + d3.event.transform.k + ")");
 }
-
-
-
-
-		
 	});
-
 	});
-
 }
-
-//	var n = showAllNodes(119626,874525);
-//console.log(n);
-
-
 
 function getAllTopicEntries(course_id,topic_id,callback) {
         $.ajax({
@@ -916,7 +833,6 @@ function getAllTopicEntries(course_id,topic_id,callback) {
                 method: "get",
                 headers: {"Content-Type": "application/json"},
                 success: function (data) {
-//			console.log(data);
 			callback(data);
 	        }});
 }
@@ -1028,13 +944,19 @@ function rateEntry(course_id,topic_id,entry_id,rating) {
         }});
 }
 
+
+//var nodes=[];
 function getNodes(course_id,topic_id,callback){
+	var allnodes=[];
 	var nodes = [];
 	var o=[];
+	getDiscussionTopicNodes(course_id,topic_id,function(out){
+	nodes.push(out);
+	allnodes=nodes;	
 	getAllTopicEntries(course_id,topic_id,function(data){
-		tdata=data.topic_entries;
-	//	console.log(tdata);
+		if(data){
 		var nodes=[];
+		tdata=data.topic_entries;
 		for(i=0;i<tdata.length;i++){
 			var node ={};
 			node['user_id']=tdata[i].user_id;
@@ -1053,22 +975,15 @@ function getNodes(course_id,topic_id,callback){
 			}
 		}
 	var nodes = _.uniqBy(nodes,function(u){ return u.user_id; });
-
-	getDiscussionTopicNodes(course_id,topic_id,function(out){
-		console.log(out);
-		for(i=0;i<out.length;i++){
- 			nodes.push(out[i]);
-		}
-	var flags = [], o = [], l = nodes.length, i;
-	for( i=0; i<l; i++) {
-    		if( flags[nodes[i].name]) continue;
-    			flags[nodes[i].name] = true;
-    			o.push(nodes[i]);
-		}
-//	console.log(o);
-	callback(o);
-	});
+		for(i=0;i<nodes.length;i++)
+			allnodes.push(nodes[i]);
+		//	console.log(allnodes);
+	}
+		callback(allnodes);
 });
+
+});
+//	callback(allnodes);
 //var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(output));
 //var dlAnchorElem = document.getElementById('downloadAnchorElem');
 //dlAnchorElem.setAttribute("href",     dataStr     );
@@ -1078,22 +993,13 @@ function getNodes(course_id,topic_id,callback){
 
 function getDiscussionTopicNodes(course_id,topic_id,callback){
 	getDiscussionTopic(course_id,topic_id,function(output){
-//		console.log(output);
 		var allnodes=[];
 		var dnode ={};
 		dnode['user_id']=output.discussions_topic.id;
 		dnode['name']=output.discussions_topic.title;
 		dnode['image']="";
 
-		allnodes.push(dnode);
-//		console.log(allnodes);
-		pnode ={};
-		pnode['user_id']=output.discussions_topic.author.id;
-		pnode['name']=output.discussions_topic.author.display_name;
-		pnode['image']=output.discussions_topic.author.avatar_image_url;
-		allnodes.push(pnode);
-//		console.log(allnodes);
-		callback(allnodes);
+		callback(dnode);
 	});
 
 }
@@ -1103,9 +1009,7 @@ function getLinks(course_id,topic_id,callback){
 	getAllTopicEntries(course_id,topic_id,function(data){
 	var links = [];
 	var replies=[];
-//	console.log(data);
 	var edata = data.topic_entries;
-//		console.log(edata);
 	for(i=0;i<edata.length;i++){
 		var link ={};
 		link['source']=edata[i].user_id;
@@ -1113,96 +1017,97 @@ function getLinks(course_id,topic_id,callback){
 			link['target']=topic_id;
 		}
 		link['post']=edata[i].message;
+		link['post_id']=edata[i].id;
 		var r =[];
 		if(edata[i].recent_replies){
 				r.push(edata[i].recent_replies);
 		
 		var rlink ={};
+			
+			
+			
+
 		for(j=0;j<r.length;j++){
 			var w=[];
 			w=r[j];
 			for(k=0;k<w.length;k++){
 				rlink = {};
 				rlink['source']=w[k].user_id;
-				for(m=0;m<edata.length;m++){
-					if(edata[m].id === w[k].parent_id){
-					rlink['target'] = edata[m].user_id;}
+				for(l=0;l<w.length;l++){
+				if(w[k].parent_id==w[l].id){
+					rlink['target']=w[l].user_id;
 				}
+				else{
+				for(m=0;m<edata.length;m++){
+					if(edata[m].id == w[k].parent_id){
+					rlink['target'] = edata[m].user_id;
+						}
+					else if(edata[m].parent_id==null)
+					{
+						rlink['target']=edata[m].user_id;
+					}
+				
 				rlink['post']=w[k].message;
+				rlink['post_id']=w[k].id;
+			}
+				}
+				}
 				links.push(rlink);
 			}
+		}
+
+
+
+		}
+
+
 		links.push(link);
 		}
 
-	    }
-		else{
-			links.push(link);
-		}
-
-	}
-
-	getDiscussionTopic(course_id,topic_id,function(output){
-		var tlink={};
-	//	console.log(output);
-		var dt=output.discussions_topic;
-		tlink['source']=dt.author.id;
-		tlink['target']=dt.id;
-		tlink['post']=dt.message;
-		links.push(tlink);
-		console.log(links);
+	    
 		callback(links);	
 	});
-	});
 }
-
 
 
 function getUserEntries(course_id,topic_id,user_id,callback){
 	user_entry={};
 	var entries=[];
 	getDiscussionTopic(course_id,topic_id,function(output){
-//		entries=[];
 		var dt=output.discussions_topic;
-//		console.log(dt);
-		if(dt.author.id === user_id){
+		if(topic_id === user_id){
 		post={};
-		user_entry['id']=dt.author.id;
-		user_entry['name']=dt.author.display_name;
-		user_entry['image']=dt.author.avatar_image_url;
-		user_entry['link']=dt.author.html_url;
+		user_entry['id']=dt.id;
+		user_entry['name']=dt.title;
+		user_entry['image']="";
+		user_entry['link']=dt.html_url;
+		
 		user_entry['posts']={};
 		post['created_at']=dt.created_at;
+		post['entry_id']=dt.id;		
 		post['post']=dt.message;
 		entries.push(post);
-	//	user_entry['posts']=entries;
 		}
 	});	
 		getAllTopicEntries(course_id,topic_id,function(result){
-		//	console.log(result);
-	//	tentries=[];
 
 		var te=result.topic_entries;
 		for(i=0;i<te.length;i++){
-//			console.log(te[i]);
 			if(te[i].user_id === user_id){
 		user_entry['id']=te[i].user.id;
 		user_entry['name']=te[i].user.display_name;
 		user_entry['image']=te[i].user.avatar_image_url;
 		user_entry['link']=te[i].user.html_url;
-		user_entry['posts']={};
+				user_entry['posts']={};
 				tpost={};
-				//console.log(tentry);
-				//entry['posts']={};
 				tpost['created_at']=te[i].created_at;
+				tpost['entry_id']=te[i].id;
 				tpost['post']=te[i].message;
 				entries.push(tpost);
-			//	user_entry['posts']=tentries;
 			}
 			if(te[i].recent_replies){
 				rentries=[];
 				replies=te[i].recent_replies;
-		//	if(replies){
-		//		console.log(replies);
 				for(j=0;j<replies.length;j++){
 					if(replies[j].user_id === user_id){
 						user_entry['id']=replies[j].user.id;
@@ -1213,9 +1118,9 @@ function getUserEntries(course_id,topic_id,user_id,callback){
 		
 					rpost={};
 					rpost['created_at']=replies[j].created_at;
+					rpost['entry_id']=replies[j].id;
 					rpost['post']=replies[j].message;
 					entries.push(rpost);
-	//				user_entry['posts']=rentries;
 				}
 			}
 			}
@@ -1225,25 +1130,6 @@ function getUserEntries(course_id,topic_id,user_id,callback){
 		});
 
 
-
-//		callback(user_entry);
-		
-//});	
-	
 }
   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
