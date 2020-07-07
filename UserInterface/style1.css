@@ -1,3 +1,16 @@
+#info {
+   /* position: absolute; /*or fixed*/
+/*    right: 0px; */
+    float:right;
+    box-sizing: border-box;
+    margin: 0 auto;
+    padding-top: 14px;
+}
+
+.clear {
+	clear:both;
+}
+
 .circle {
   position: relative;
   width: 50px;

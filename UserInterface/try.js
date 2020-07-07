@@ -7,35 +7,35 @@ $(document).ready(function () {
 
 const apiUrl = "https://ceclnx01.csi.miamioh.edu/~ojhah/cse451-ojhah-web/schema_model/UserInterface/canvasRestServer.php/api/v1/";
 
-function formDiscussion(course_id){
+//function formDiscussion(course_id){
 
-	$("#topic").append("Create a New Discussion:<br>");
-	$("#topic").append("<form id='discussionForm' method='post'><br>Enter Title: <input type='text' name='dtitle' placeholder='type a discussion title'><br>Enter Post: <input type='text' name='dmessage' placeholder='type post'><br><input type='submit' value='Create'>");
+//	$("#topic").append("Create a New Discussion:<br>");
+//	$("#topic").append("<form id='discussionForm' method='post'><br>Enter Title: <input type='text' name='dtitle' placeholder='type a discussion title'><br>Enter Post: <input type='text' name='dmessage' placeholder='type post'><br><input type='submit' value='Create'>");
 
 
-$('#discussionForm').submit(function(e) {
-	e.preventDefault();
+//$('#discussionForm').submit(function(e) {
+//	e.preventDefault();
     // get all the inputs into an array.
-    var $inputs = $('#discussionForm :input');
+//    var $inputs = $('#discussionForm :input');
 
     // not sure if you wanted this, but I thought I'd add it.
     // get an associative array of just the values.
-    var values = {};
-    $inputs.each(function() {
-        values[this.name] = $(this).val();
-    });
+//    var values = {};
+//    $inputs.each(function() {
+//        values[this.name] = $(this).val();
+//    });
 //alert("values "+values['dtitle']+","+values['dmessage']);
-	var title=values['dtitle'],message=values['dmessage'];
+//	var title=values['dtitle'],message=values['dmessage'];
 	
-createDiscussion(course_id,title,message);
+//createDiscussion(course_id,title,message);
 //$("#topic").load(location.href + " #topic");	
-});
-}
+//});
+//}
 
 function showDiscussions(course_id,callback){
 	getDiscussionsByCourseID(course_id,function(output){
 //		console.log(output);
-formDiscussion(course_id);
+//formDiscussion(course_id);
 //		$("#topic").append("<div id='dlist'>")
 $.each(output.discussions_topics,function(k,v){
 			
@@ -113,13 +113,18 @@ function getAllCourses(callback) {
                 method: "get",
                 headers: {"Content-Type": "application/json"},
                 success: function (data) {
+			console.log(data);
       			callback(data);
 		}});
 }
 
 function showAllCourses(callback){
 	getAllCourses(function(output){
-		$.each(output.courses,function(k,v){
+		courses=output.courses;
+		var active_courses=courses.filter(function (el){
+		return el.restrict_enrollments_to_course_dates==false;
+		});
+		$.each(active_courses,function(k,v){
 			$("#course").append("<br><button  name='course-btn' value='"+v.name+"' onclick='showDiscussions("+v.id+")'>"+v.name+"</button>");
 		});	
 		$("body").on('click',"button[name=course-btn]",function(){
@@ -131,13 +136,14 @@ function showAllCourses(callback){
        });
 }	
 
-function getCourse(course_id) {
+function getCourse(course_id,callback) {
 	$.ajax({
                 url: apiUrl+'/courses/'+course_id,
                 method: "get",
                 headers: {"Content-Type": "application/json"},
                 success: function (data) {
-                console.log(data);
+  //              console.log(data);
+			callback(data);
         }});
 }
 
@@ -427,7 +433,7 @@ function linkArc(d) {
     function update(links, nodes) {
 	    
 // add tooltip to HTML body
-  var tooltip = d3.select("body")
+  var tooltip = d3.select("body").select("#tool")
     .append("div")
     .attr("class", "tooltip")
     .style("position", "absolute")
@@ -569,7 +575,8 @@ function postNode(){
 
 }
 
-
+// global listener
+//  d3.select('body').on('click', clickNode);
 
 function clickNode(node) {
        // update visibility
@@ -584,6 +591,7 @@ var pageY = d3.event.pageY
        loadTooltipContent(node);
        
        if (isTooltipHidden) {
+	    d3.event.stopPropagation();
          unPinNode(node);
        }
     
@@ -611,11 +619,13 @@ var pageY = d3.event.pageY
 
 
 
+	
 
 
 		     // reset nodes to not be pinned
   function unPinNode(node) {
-	  var htmlContent="";
+//	  var htmlContent="";
+	  $(".tooltip").empty();
      node.fx = null;
      node.fy = null;
   }
@@ -623,8 +633,9 @@ var pageY = d3.event.pageY
   // add html content to tooltip
   function loadTooltipContent(node) {
 //	  console.log(node);
-	  id=node.user_id;
-	  getUserEntries(course_id,topic_id,id,function(output){
+	  $(".tooltip").empty();
+	  uid=node.user_id;
+	  getUserEntries(course_id,topic_id,uid,function(output){
 //		console.log(output);
      			var deg;
 			var degree=degreeCent(graph);
@@ -647,14 +658,22 @@ for (var d in degree){
 }
 
 //		console.log(output);
+getUserRole(course_id,function(id){
+//console.log(id);
+
+//console.log(role);
+
 		var htmlContent= "";
+
+
 		htmlContent += "<div id=\"container-main\">";
       htmlContent += "<h4>" + output.name +"  "+"<img width=20 height=20 src='"+output.image+"'><\/h4>";
-		htmlContent+="Degree Centrality: "+deg+"<br>";
-		htmlContent+="Betweenness Centrality: "+bet+"<br>";
-		htmlContent+="Clustering Coefficient: "+clu+"<br><br>";
-
-
+if(!id=="student"){
+	$("#info").append("<p>Degree Centrality: "+deg+"<br>"
+		+"<p>Betweenness Centrality: "+bet+"<br>"
+		+"<p>Clustering Coefficient: "+clu+"<br><br>");
+}
+//});
 //      htmlContent += "<img width=10 height=10 src='"+output.image+"'><br>"
 var entries=[];
 getLinks(course_id,topic_id,function(n){
@@ -698,12 +717,12 @@ htmlContent+="<div id='container-post-"+index+"'>"
       htmlContent+="Posted to: "+name+"</br>"
 	htmlContent+="<span id="+item.entry_id+">"
 
-	htmlContent += "Post: "+item.post+"</span><br>"
+	htmlContent +=item.post+"</span><input type=\"button\" class=\"edit-btn\" value=\"Edit\"><br>"
 
       htmlContent += "<input type=\"button\" class=\"reply-btn\" value=\"Reply\">"
-      htmlContent += "<button name=\"comment-btn\">Comment</button>"	
-      htmlContent += "<button name=\"discuss-btn\" value=\"Discuss\">Discuss</button>"
-      htmlContent += "<button name=\"solve-btn\" value=\"Solve\">Solve</button>"	
+      htmlContent += "<input type=\"button\" class=\"comment-btn\" value=\"Comment\">"	
+      htmlContent += "<input type=\"button\" class=\"discuss-btn\" value=\"Discuss\">"
+      htmlContent += "<input type=\"button\" class=\"solve-btn\" value=\"Solve\">"	
 
       htmlContent += "<\/form>"
    htmlContent+="</div>"
@@ -715,9 +734,71 @@ htmlContent+="<div id='container-post-"+index+"'>"
       tooltip.html(htmlContent);
 
 
+		$(".edit-btn").on('click',function(){
+			//var text=$(this).attr("value");
+			//(this).form
+		//	var text=$("#"+item.entry_id).text();
+//			var id=item.entry_id;
+			$("span").hide();
+			var parent_id = $(this).parent().parent().attr('id');
+			var text = $(this).siblings("span").text();
+			var htmlE= "";
+			htmlE+="<div>";
+      htmlE += "<form id=\"editForm\" method=\"put\">"
+	htmlE +="<textarea id=\"editText\" class=\"text\" cols=\"40\" rows =\"4\" name=\"editText\">"+text+"</textarea><br>"     
+//	htmlContent+="Degree: "+deg
+      htmlE += "<input type=\"submit\" class=\"edit\" value=\"Edit\">"
+      htmlE+="<input type=\"button\" class=\"cancel\" value=\"Cancel\">"
+      htmlE += "<\/form>"
+   
+   	htmlE += "<\/div>";	
+	$('#'+parent_id).append(htmlE);
+   //   tooltip.html(htmlContent);
+
+		
+$('#editForm').submit(function(e) {
+	e.preventDefault();
+    var $inputs = $('#editForm :input');
+    var values = {};
+    $inputs.each(function() {
+        values[this.name] = $(this).val();
+    });
+//	console.log($inputs);
+var etext=values['editText'];
+//	console.log(values);
+var entry_id=$(this).parent().siblings("form").children("span").attr('id');
+//	console.log(output);
+	updateDiscussionTopicEntry(course_id,topic_id,entry_id,etext);
+	$("#editForm").hide();
+	loadTooltipContent(node);
+//	getUserEntries(course_id,topic_id,uid,function(ui){
+//		p=ui.posts;
+//		console.log(p);
+//		for(i=0;i<p.length;i++){
+//			$("#"+p[i].entry_id).empty();
+//			$("#"+p[i].entry_id).append(p[i].post);
+//		}
+//			$("span").show();
+//		}
+//	});
+//	$(".tooltip").hide();
+//	$(".tooltip").show();
+});
+
+$('.cancel').click(function() {
+    $(this).parent().hide();
+	$("span").show();
+});
+
+	});
+
+
+
+
 		$(".reply-btn").on('click',function(){
 			//var text=$(this).attr("value");
 			//(this).form
+			
 			var parent_id = $(this).parent().parent().attr('id');
 // console.log(parent_id);
 	var htmlC= "";
@@ -731,17 +812,14 @@ htmlContent+="<div id='container-post-"+index+"'>"
       htmlC+="<input type=\"button\" class=\"cancel\" value=\"Cancel\">"
       htmlC += "<\/form>"
    
-   	htmlC += "<\/div>"	
+   	htmlC += "<\/div>";	
 	$('#'+parent_id).append(htmlC);
    //   tooltip.html(htmlContent);
 
 		
 $('#replyForm').submit(function(e) {
 	e.preventDefault();
-    // get all the inputs into an array.
     var $inputs = $('#replyForm :input');
-    // not sure if you wanted this, but I thought I'd add it.
-    // get an associative array of just the values.
     var values = {};
     $inputs.each(function() {
         values[this.name] = $(this).val();
@@ -761,13 +839,10 @@ var entry_id=$(this).parent().siblings('form').children('span').attr('id');
 		$("#graph").empty();
 		$(".tooltip").remove();
 		showAllData(course_id,topic_id,callback);
-//		simulation.stop();
- // simulation.alphaTarget(1).restart();
 	}		
 	else{
 	createDiscussionEntryReply(course_id,topic_id,entry_id,reply);
 		$(this).parent().hide();
-//d3.selectAll("svg > *").remove();
 		$(".tooltip").hide();
 		$("#graph").empty();
 		$(".tooltip").remove();
@@ -780,6 +855,203 @@ $('.cancel').click(function() {
 });
 
 	});
+
+		$(".comment-btn").on('click',function(){
+			//var text=$(this).attr("value");
+			//(this).form
+			
+			var parent_id = $(this).parent().parent().attr('id');
+// console.log(parent_id);
+	var htmlC= "";
+		htmlC += "<div>";
+//      htmlContent += "<h4>" + output.name +"  "+"<img width=20 height=20 src='"+output.image+"'><\/h4>";
+
+      htmlC += "<form id=\"commentForm\" method=\"post\">"
+	htmlC +="<textarea id=\"postText\" class=\"text\" cols=\"40\" rows =\"4\" name=\"postText\"></textarea><br>"     
+//	htmlContent+="Degree: "+deg
+      htmlC += "<input type=\"submit\" class=\"comment\" value=\"Comment\">"
+      htmlC+="<input type=\"button\" class=\"cancel\" value=\"Cancel\">"
+      htmlC += "<\/form>"
+   
+   	htmlC += "<\/div>";	
+	$('#'+parent_id).append(htmlC);
+   //   tooltip.html(htmlContent);
+
+		
+$('#commentForm').submit(function(e) {
+	e.preventDefault();
+    var $inputs = $('#commentForm :input');
+    var values = {};
+    $inputs.each(function() {
+        values[this.name] = $(this).val();
+    });
+	var names={};
+	$inputs.each(function(){
+		names[this.value]=$(this).val();
+	});
+var reply=values['postText'];
+var rel_type=names['Comment'];
+console.log(rel_type);
+var entry_id=$(this).parent().siblings('form').children('span').attr('id');
+	if(entry_id==topic_id){
+	createDiscussionTopicEntry(course_id,topic_id,reply);
+		$(this).parent().hide();
+	$(".tooltip").hide();
+		$("#graph").empty();
+		$(".tooltip").remove();
+		showAllData(course_id,topic_id,callback);
+	}		
+	else{
+	createDiscussionEntryReply(course_id,topic_id,entry_id,reply);
+		$(this).parent().hide();
+		$(".tooltip").hide();
+		$("#graph").empty();
+		$(".tooltip").remove();
+		showAllData(course_id,topic_id,callback);
+		}
+});
+
+$('.cancel').click(function() {
+    $(this).parent().hide();
+});
+
+	});
+
+
+
+		$(".discuss-btn").on('click',function(){
+			//var text=$(this).attr("value");
+			//(this).form
+			
+			var parent_id = $(this).parent().parent().attr('id');
+// console.log(parent_id);
+	var htmlC= "";
+		htmlC += "<div>";
+//      htmlContent += "<h4>" + output.name +"  "+"<img width=20 height=20 src='"+output.image+"'><\/h4>";
+
+      htmlC += "<form id=\"discussForm\" method=\"post\">"
+	htmlC +="<textarea id=\"postText\" class=\"text\" cols=\"40\" rows =\"4\" name=\"postText\"></textarea><br>"     
+//	htmlContent+="Degree: "+deg
+      htmlC += "<input type=\"submit\" class=\"discuss\" value=\"Discuss\">"
+      htmlC+="<input type=\"button\" class=\"cancel\" value=\"Cancel\">"
+      htmlC += "<\/form>"
+   
+   	htmlC += "<\/div>";	
+	$('#'+parent_id).append(htmlC);
+   //   tooltip.html(htmlContent);
+
+		
+$('#discussForm').submit(function(e) {
+	e.preventDefault();
+    var $inputs = $('#discussForm :input');
+    var values = {};
+    $inputs.each(function() {
+        values[this.name] = $(this).val();
+    });
+	var names={};
+	$inputs.each(function(){
+		names[this.value]=$(this).val();
+	});
+var reply=values['postText'];
+var rel_type=names['Discuss'];
+console.log(rel_type);
+var entry_id=$(this).parent().siblings('form').children('span').attr('id');
+	if(entry_id==topic_id){
+	createDiscussionTopicEntry(course_id,topic_id,reply);
+		$(this).parent().hide();
+	$(".tooltip").hide();
+		$("#graph").empty();
+		$(".tooltip").remove();
+		showAllData(course_id,topic_id,callback);
+	}		
+	else{
+	createDiscussionEntryReply(course_id,topic_id,entry_id,reply);
+		$(this).parent().hide();
+		$(".tooltip").hide();
+		$("#graph").empty();
+		$(".tooltip").remove();
+		showAllData(course_id,topic_id,callback);
+		}
+});
+
+$('.cancel').click(function() {
+    $(this).parent().hide();
+});
+
+	});
+
+
+
+
+		$(".solve-btn").on('click',function(){
+			//var text=$(this).attr("value");
+			//(this).form
+			
+			var parent_id = $(this).parent().parent().attr('id');
+// console.log(parent_id);
+	var htmlC= "";
+		htmlC += "<div>";
+//      htmlContent += "<h4>" + output.name +"  "+"<img width=20 height=20 src='"+output.image+"'><\/h4>";
+
+      htmlC += "<form id=\"solveForm\" method=\"post\">"
+	htmlC +="<textarea id=\"postText\" class=\"text\" cols=\"40\" rows =\"4\" name=\"postText\"></textarea><br>"     
+//	htmlContent+="Degree: "+deg
+      htmlC += "<input type=\"submit\" class=\"solve\" value=\"Solve\">"
+      htmlC+="<input type=\"button\" class=\"cancel\" value=\"Cancel\">"
+      htmlC += "<\/form>"
+   
+   	htmlC += "<\/div>";	
+	$('#'+parent_id).append(htmlC);
+   //   tooltip.html(htmlContent);
+
+		
+$('#solveForm').submit(function(e) {
+	e.preventDefault();
+    var $inputs = $('#solveForm :input');
+    var values = {};
+    $inputs.each(function() {
+        values[this.name] = $(this).val();
+    });
+	var names={};
+	$inputs.each(function(){
+		names[this.value]=$(this).val();
+	});
+var reply=values['postText'];
+var rel_type=names['Solve'];
+console.log(rel_type);
+var entry_id=$(this).parent().siblings('form').children('span').attr('id');
+	if(entry_id==topic_id){
+	createDiscussionTopicEntry(course_id,topic_id,reply);
+		$(this).parent().hide();
+	$(".tooltip").hide();
+		$("#graph").empty();
+		$(".tooltip").remove();
+		showAllData(course_id,topic_id,callback);
+	}		
+	else{
+	createDiscussionEntryReply(course_id,topic_id,entry_id,reply);
+		$(this).parent().hide();
+		$(".tooltip").hide();
+		$("#graph").empty();
+		$(".tooltip").remove();
+		showAllData(course_id,topic_id,callback);
+		}
+});
+
+$('.cancel').click(function() {
+    $(this).parent().hide();
+});
+
+	});
+
+
+
+
+
+
+
+
+});
 });
 });
 });
@@ -870,7 +1142,7 @@ function createDiscussionTopicEntry(course_id,topic_id,message) {
         }});
 }
 
-function updateDiscussionTopicEntries(course_id,topic_id,entry_id,message) {
+function updateDiscussionTopicEntry(course_id,topic_id,entry_id,message) {
         $.ajax({
                 url: apiUrl+'courses/'+course_id+'/discussion_topics/'+topic_id+'/entries/'+entry_id,
                 method: "put",
@@ -1132,4 +1404,9 @@ function getUserEntries(course_id,topic_id,user_id,callback){
 
 }
   
-
+function getUserRole(course_id,callback){
+	getCourse(course_id,function(output){
+	//	console.log(output.course.enrollments[0].type);
+		callback(output.course.enrollments[0].type);
+	});
+}
