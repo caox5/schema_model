@@ -7,36 +7,11 @@ $(document).ready(function () {
 
 const apiUrl = "https://ceclnx01.csi.miamioh.edu/~ojhah/cse451-ojhah-web/schema_model/UserInterface/canvasRestServer.php/api/v1/";
 
-//function formDiscussion(course_id){
-
-//	$("#topic").append("Create a New Discussion:<br>");
-//	$("#topic").append("<form id='discussionForm' method='post'><br>Enter Title: <input type='text' name='dtitle' placeholder='type a discussion title'><br>Enter Post: <input type='text' name='dmessage' placeholder='type post'><br><input type='submit' value='Create'>");
-
-
-//$('#discussionForm').submit(function(e) {
-//	e.preventDefault();
-    // get all the inputs into an array.
-//    var $inputs = $('#discussionForm :input');
-
-    // not sure if you wanted this, but I thought I'd add it.
-    // get an associative array of just the values.
-//    var values = {};
-//    $inputs.each(function() {
-//        values[this.name] = $(this).val();
-//    });
-//alert("values "+values['dtitle']+","+values['dmessage']);
-//	var title=values['dtitle'],message=values['dmessage'];
-	
-//createDiscussion(course_id,title,message);
-//$("#topic").load(location.href + " #topic");	
-//});
-//}
 
 function showDiscussions(course_id,callback){
 	getDiscussionsByCourseID(course_id,function(output){
-//		console.log(output);
-//formDiscussion(course_id);
-//		$("#topic").append("<div id='dlist'>")
+
+
 $.each(output.discussions_topics,function(k,v){
 			
 			$("#dlist").append("<br><button name='topic-btn' value='"+v.title+"' onclick='showAllData("+course_id+','+v.id+")'>"+v.title+"</button>");
@@ -44,44 +19,13 @@ $.each(output.discussions_topics,function(k,v){
 //		$("#topic").append("</div>");
 		$("body").on('click', "button[name=topic-btn]", function() {
   			var text = $(this).attr("value");
-  			$("#t_name").append("<p>"+text);
+  			$("#c_name").append(" &nbsp; > &nbsp; "+"<a href=#>"+text+"</a>");
+//			$("#d").hide();
 		});
 	});
-
 	}
 
-function createDiscussion(course_id,title,message) {
 
-$.ajax({
-                url: apiUrl+'courses/'+course_id+'/discussion_topics',
-                method: "post",
-                headers: {"Content-Type": "application/json"},
-                data: JSON.stringify({title: title, message: message}),
-                dataType: 'json',
-                success: function (data) {
-                        console.log(data);
-			getDiscussionsByCourseID(course_id,function (out){
-			console.log(out);
-			topics=out.discussions_topics;
-			for(i=0;i<topics.length;i++){
-				if(topics[i].title == title){
-					var id = topics[i].id;
-					console.log(id);
-				}
-			}
-			
-		$("#dlist").prepend("<br><button name='topic-btn' value='"+data.title+"' onclick='showAllData("+course_id+','+id+")'>"+data.title+"</button>");
-//		$("#topic").append("</div>");
-		$("body").on('click', "button[name=topic-btn]", function() {
-  			var text = $(this).attr("value");
-  	//		$("#t_name").append("<p>"+text);
-		});
-			});
-                },
-                error: function(error){
-                        console.log("Error on ajax fetch");
-        }});
-}
 
 function getDiscussionsByCourseID(course_id,callback) {	
 	$.ajax({
@@ -113,7 +57,7 @@ function getAllCourses(callback) {
                 method: "get",
                 headers: {"Content-Type": "application/json"},
                 success: function (data) {
-			console.log(data);
+		//	console.log(data);
       			callback(data);
 		}});
 }
@@ -130,7 +74,7 @@ function showAllCourses(callback){
 		$("body").on('click',"button[name=course-btn]",function(){
 			var text=$(this).attr("value");
 
-			$("#c_name").append("<p>"+text);
+			$("#c_name").append("<a href=#>"+text+"</a>");
 			$("#c").hide();
 		});
        });
@@ -149,6 +93,9 @@ function getCourse(course_id,callback) {
 
 function showAllData(course_id,topic_id,callback){
 	$("#d").hide();
+//	$("#c").empty();
+//	$("#d").empty();
+	
 	var alldata={};
 	var d={};
 	getNodes(course_id,topic_id,function(output){
@@ -161,6 +108,8 @@ function showAllData(course_id,topic_id,callback){
 var links=graph.links,
 	nodes=graph.nodes;
 
+console.log(links);
+
 var nodeMap = {};
             nodes.forEach(function(x) { nodeMap[x.user_id] = x; });
 		if(links){
@@ -171,8 +120,16 @@ var nodeMap = {};
                 };
             });
 		}
-	
 
+getUserRole(course_id,function(role){
+	$.each( output, function( key, value ) {
+		console.log(role.user_id);
+		console.log(value.user_id);
+	if(role.user_id==value.user_id){
+		$("#greet").append("<p>Hello, &nbsp; "+value.name);
+	}
+	});
+});
 var node_data = nodes.map(function (d) {return d.user_id});
 var edge_data = links.map(function (d) {return [d.source.user_id, d.target.user_id]; });
 
@@ -205,7 +162,14 @@ var degreeCent = function(g) {
   return counts;
 };
 
-var degree=degreeCent(graph);
+//var degree=degreeCent(graph);
+
+//cliques in a graph
+//var cliques=jsnx.findCliques(G);
+//  console.log(cliques);
+
+
+
 
 // Toggle for ego networks on click (below).
 var toggle = 0;
@@ -555,7 +519,7 @@ node.exit().remove();
 // keep track of if tooltip is hidden or not
   var isTooltipHidden = true;
 
-
+//var toggle;
 
 function postNode(){
 	
@@ -588,12 +552,20 @@ var pageX = d3.event.pageX
 var pageY = d3.event.pageY
 	
        // load tooltip content (if it changes based on node)
-       loadTooltipContent(node);
+	
+       //loadTooltipContent(node);
        
        if (isTooltipHidden) {
 	    d3.event.stopPropagation();
+	      // loadTooltipContent(node);
          unPinNode(node);
+	$("#sna").empty();
        }
+	else
+	{
+		//unPinNode(node);
+		loadTooltipContent(node);
+	}
     
        // place tooltip where cursor was
        return tooltip.style("top", (pageY -10) + "px").style("left", (pageX + 10) + "px").style("visibility", visibility);
@@ -628,15 +600,56 @@ var pageY = d3.event.pageY
 	  $(".tooltip").empty();
      node.fx = null;
      node.fy = null;
+//	  toggle=1;
   }
+
+
+
+var db="";
+db+="<h4>Highlights</h4>";
+db+="<p>Total Participants: &nbsp; "+nodes.length;
+db+="<p>Total Interactions: &nbsp; "+links.length;
+db+="<p>Top Contributor: &nbsp;";
+db+="<p>Top Facilitator: &nbsp;";
+db+="<p>Potential Team Leader(s): &nbsp;"
+console.log(links);
+jsnx.genFindCliques(G).then(function(cliques) {
+  console.log(cliques);
+});
+
+//$.each(cliques)
+//db+=
+
+
+
+
+
+var largestClq=jsnx.graphCliqueNumber(G);
+console.log(largestClq);
+
+db+="<p>Size of largest group: &nbsp; "+largestClq;
+
+//Return a list of nodes connected to node n.
+var neighbors=jsnx.neighbors(G,node_data[1]);
+console.log(neighbors);
+
+
+$("#db").append(db);
+console.log(db);
+
+
+
+
+
 
   // add html content to tooltip
   function loadTooltipContent(node) {
 //	  console.log(node);
+	  //toggle=0;
 	  $(".tooltip").empty();
 	  uid=node.user_id;
 	  getUserEntries(course_id,topic_id,uid,function(output){
-//		console.log(output);
+		console.log(output);
      			var deg;
 			var degree=degreeCent(graph);
 //			console.log(degree);
@@ -661,31 +674,37 @@ for (var d in degree){
 getUserRole(course_id,function(id){
 //console.log(id);
 
-//console.log(role);
-
 		var htmlContent= "";
 
 
 		htmlContent += "<div id=\"container-main\">";
       htmlContent += "<h4>" + output.name +"  "+"<img width=20 height=20 src='"+output.image+"'><\/h4>";
-if(!id=="student"){
-	$("#info").append("<p>Degree Centrality: "+deg+"<br>"
-		+"<p>Betweenness Centrality: "+bet+"<br>"
-		+"<p>Clustering Coefficient: "+clu+"<br><br>");
+if(id.type!="student"){
+//	$("#sna").empty();
+	$("#sna").append("<br><h4>"+output.name+"  Details</h4>"
+		+"<p>Interactions Frequency: "+deg+"<br>"
+		+"Most Interacted with: ");
+
 }
 //});
 //      htmlContent += "<img width=10 height=10 src='"+output.image+"'><br>"
 var entries=[];
 getLinks(course_id,topic_id,function(n){
+	console.log(n);
 	getNodes(course_id,topic_id,function(x){
 	for(i=0;i<n.length;i++){
 		entry={};
 	entry['source']=n[i].source;
-	entry['target']=n[i].target;
+		if(n[i].target){
+	entry['target']=n[i].target;}
+		else{
+	entry['target']=topic_id;	
+		}
 	entry['post_id']=n[i].post_id;
 	entry['post']=n[i].post;
 		entries.push(entry);
 }
+console.log(entries);
 //});
 nodeNames=[];
 for(j=0;j<x.length;j++){
@@ -695,29 +714,48 @@ for(j=0;j<x.length;j++){
 	nodeNames.push(nn);
 }
 	posts=output.posts;
-posts.forEach(pf);
+if(posts){
+posts.forEach(pf);}
 //entries.forEach(ent);
+console.log(posts);
+
+
+
+
+
+
+
 		function pf(item,index){
+	//		if(typeof entries==='undefined'){
+			for(j=0;j<nodeNames.length;j++){
+				if(nodeNames[j].user_id==topic_id)
+				var name=nodeNames[j].name;
+			}
+	//				}			
+	//		else{
 			for(i=0;i<entries.length;i++){
-			if(entries[i].post_id==item.entry_id){ 
-				var posted_to=entries[i].target;
-				//console.log(posted_to);
+				if(entries[i].post_id==item.entry_id){ 
+					var posted_to=entries[i].target;	
 				for(j=0;j<nodeNames.length;j++){
-					if(posted_to){
 					if(posted_to==nodeNames[j].user_id){
-						var name=nodeNames[j].name;
-					}}
-					else var name="Discussion Board";
+						name=nodeNames[j].name;
+					}
+					
 				}
 			}
 			}
+	//		}
 htmlContent+="<div id='container-post-"+index+"'>"		
       htmlContent += "<form id='postForm-"+index+ "' method=\"post\">"
 	htmlContent +="Date: <i>"+item.created_at+"</i><br>"     
       htmlContent+="Posted to: "+name+"</br>"
 	htmlContent+="<span id="+item.entry_id+">"
 
-	htmlContent +=item.post+"</span><input type=\"button\" class=\"edit-btn\" value=\"Edit\"><br>"
+if(id.type!="student"){
+	htmlContent +=item.post+"</span><input type=\"button\" class=\"edit-btn\" value=\"Edit\"><br>"  }
+else{
+	htmlContent+=item.post+"<br>"
+}
 
       htmlContent += "<input type=\"button\" class=\"reply-btn\" value=\"Reply\">"
       htmlContent += "<input type=\"button\" class=\"comment-btn\" value=\"Comment\">"	
@@ -1057,7 +1095,7 @@ $('.cancel').click(function() {
 });
   }
 
-
+//toggle=1;
 }
     
 
@@ -1095,6 +1133,7 @@ $('.cancel').click(function() {
 function zoomed() {
 	  container.attr("transform", "translate(" + d3.event.transform.x + ", " + d3.event.transform.y + ") scale(" + d3.event.transform.k + ")");
 }
+//	});
 	});
 	});
 }
@@ -1306,18 +1345,18 @@ function getLinks(course_id,topic_id,callback){
 				rlink = {};
 				rlink['source']=w[k].user_id;
 				for(l=0;l<w.length;l++){
-				if(w[k].parent_id==w[l].id){
+				if(w[k].parent_id===w[l].id){
 					rlink['target']=w[l].user_id;
 				}
 				else{
 				for(m=0;m<edata.length;m++){
-					if(edata[m].id == w[k].parent_id){
+					if(edata[m].id === w[k].parent_id){
 					rlink['target'] = edata[m].user_id;
 						}
-					else if(edata[m].parent_id==null)
-					{
-						rlink['target']=edata[m].user_id;
-					}
+			//		else if(edata[m].parent_id==null)
+			//		{
+			//			rlink['target']=edata[m].user_id;
+		//			}
 				
 				rlink['post']=w[k].message;
 				rlink['post_id']=w[k].id;
@@ -1360,9 +1399,8 @@ function getUserEntries(course_id,topic_id,user_id,callback){
 		post['post']=dt.message;
 		entries.push(post);
 		}
-	});	
+//	});	
 		getAllTopicEntries(course_id,topic_id,function(result){
-
 		var te=result.topic_entries;
 		for(i=0;i<te.length;i++){
 			if(te[i].user_id === user_id){
@@ -1401,12 +1439,13 @@ function getUserEntries(course_id,topic_id,user_id,callback){
 			callback(user_entry);
 		});
 
-
+	});
 }
   
 function getUserRole(course_id,callback){
 	getCourse(course_id,function(output){
-	//	console.log(output.course.enrollments[0].type);
-		callback(output.course.enrollments[0].type);
+		//console.log(output);
+		callback(output.course.enrollments[0]);
 	});
 }
+

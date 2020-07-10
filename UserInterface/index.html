@@ -33,35 +33,43 @@ Structured Discussion Board User Interface
 <script src="jsnetworkx.js"></script>
 <script src = "try.js" type = "text/javascript"></script>
 <title>Discussion Board User Interface</title>
-	<h1> Discussion Board User Interface</h1>
 </head>
 
 <body> 
-	<div id="menu">
-		<p id = "c_name"><br>
-		<p id = "t_name"><br>
-		<p id = "e_name"><br>
-	</div>
+	<div id="wrapper">
+		<div id="top">
+			<div id="title">
+				<h1> Discussion Board User Interface</h1>
+			</div>
+			<div id="contents">
+				<p id = "c_name"></p>
+				
+			</div>
 
-	<div id="c">
-		<span id = "course"></span> 
-	</div>
-	
-	<div id="d">
-		<span id = "topic"></span>
-		<div id="dlist">
 		</div>
-	</div>
+		<div id="left">
+			<div id="c">
+				<span id = "course"></span> 
+			</div>
+			<div id="d">
+				<div id="dlist"></div>
+			</div>
+			<div>
+				<svg width="960" height="500"></svg>
+			</div>
+			<div id="tool"></div>
+			<br style="clear: both">
+		</div>
+		<div id="right">
+			<div id="greet"></div>
+			<div id="db"></div>
+			<div id="sna"></div>           
+			<br style="clear: both">
+				   
 
-	<div id="info">
-		<span id="sna"></span>
-	</div>
-
-	<div>
-		<svg width="960" height="500"></svg>
-	</div>
-	<div id="tool"></div>
+		</div>
 	<!-- <footer style=bottom:0;position:absolute><p>Hemraj Ojha, Discussion Board User Interface, Miami University, 2020 </p></footer>	-->
+	</div>
 </body>
 </html>
 
