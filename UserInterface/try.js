@@ -10,18 +10,29 @@ const apiUrl = "https://ceclnx01.csi.miamioh.edu/~ojhah/cse451-ojhah-web/schema_
 
 function showDiscussions(course_id,callback){
 	getDiscussionsByCourseID(course_id,function(output){
+	$("#greet").show();
+	$("#intro").empty();
+	$("#intro").append("<h3><i>Please select a discussion topic: </i></h3>");
+	getCourse(course_id,function(course){
+//	$("#db").empty();
+	$("#db").append("<h4>Course Details</h4><p>Course Name: <i>"+course.course.name+"</i><p>Start Date: <i>"+course.course.start_at+"</i>");	
+	if(course.course.end_at) {
+		$("#db").append("<p>"+course.course.end_at);
+	}
+		console.log(course.course);
 
+	});
 
 $.each(output.discussions_topics,function(k,v){
 			
-			$("#dlist").append("<br><button name='topic-btn' value='"+v.title+"' onclick='showAllData("+course_id+','+v.id+")'>"+v.title+"</button>");
+			$("#dlist").append("<br><button class=\"button menu-btn\" name='topic-btn' value='"+v.title+"' onclick='showAllData("+course_id+','+v.id+")'>"+v.title+"</button>");
 		});
-//		$("#topic").append("</div>");
 		$("body").on('click', "button[name=topic-btn]", function() {
   			var text = $(this).attr("value");
-  			$("#c_name").append(" &nbsp; > &nbsp; "+"<a href=#>"+text+"</a>");
+  			$("#c_name").append(" <i class=\"arrow right\"></i>&nbsp; "+"<a id=\"topic_link\">"+text+"</a>");
 //			$("#d").hide();
-		});
+//	$("#db").hide();	
+			});
 	});
 	}
 
@@ -62,22 +73,49 @@ function getAllCourses(callback) {
 		}});
 }
 
+
+function getAuth(callback) {
+	$.ajax({
+                url: apiUrl+'audit/authentication/users/self',
+                method: "get",
+                headers: {"Content-Typei": "application/json"},
+                success: function (data) {
+			//console.log(data.events.linked.users[0].name);
+      			callback(data);
+		}});
+}
+
 function showAllCourses(callback){
+	getAuth(function (data){
+	$("#greet").html("<h2>Welcome, "+data.events.linked.users[0].name+"!</h2>");
+		$("#db").html("<h4>About This Tool</h4><p><i>This user interface is a  graphical representation of Canvas LMS discussion board based on a schema with a goal to make discussion boards more structured. <br>This is a Web 2.0 tool created mainly with the help of PHP, Javascript, Ajax, jQuery and D3.js where all the data is manipulated using Canvas LMS REST API.<br><p>Author: Hemraj Ojha</i>");
+		$("#intro").html("<h3><i>Please select a course to begin:</i></h3>");
+	$("#c_name").append("<a href=\"index.html\" id=\"home link\">Home</a>");	
+
 	getAllCourses(function(output){
 		courses=output.courses;
 		var active_courses=courses.filter(function (el){
 		return el.restrict_enrollments_to_course_dates==false;
 		});
 		$.each(active_courses,function(k,v){
-			$("#course").append("<br><button  name='course-btn' value='"+v.name+"' onclick='showDiscussions("+v.id+")'>"+v.name+"</button>");
+			$("#course").append("<br><button class=\"button menu-btn\" name='course-btn' value='"+v.name+"' onclick='showDiscussions("+v.id+")'>"+v.name+"</button>");
 		});	
 		$("body").on('click',"button[name=course-btn]",function(){
 			var text=$(this).attr("value");
-
-			$("#c_name").append("<a href=#>"+text+"</a>");
+			
+			$("#c_name").append( " <i class=\"arrow right\"></i>&nbsp; "+"<a id=\"course_link\">"+text+"</a>");
 			$("#c").hide();
+			$("#intro").empty();
+			$("#db").empty();
+			$("#greet").hide();
+			var home_link=document.getElementById('home_link');
+			if(home_link){
+			home_link.onclick=showAllCourses;}
+	//		var course_link=document.getElementById('course_link');
+	//		course_link.onclick=showDiscussions(v.id,v.name);
 		});
        });
+	});
 }	
 
 function getCourse(course_id,callback) {
@@ -93,7 +131,12 @@ function getCourse(course_id,callback) {
 
 function showAllData(course_id,topic_id,callback){
 	$("#d").hide();
-//	$("#c").empty();
+	$("#highlights").empty();
+	$("#greet").empty();
+	$("#intro").empty();
+	$("#db").empty();
+	$("#db").show();
+	//	$("#c").empty();
 //	$("#d").empty();
 	
 	var alldata={};
@@ -108,7 +151,11 @@ function showAllData(course_id,topic_id,callback){
 var links=graph.links,
 	nodes=graph.nodes;
 
-console.log(links);
+//console.log(links);
+		$.each(output,function(k,v){
+			if(v.user_id==topic_id)
+	$("#greet").append("<h2>"+v.name+"</h2>");
+		});
 
 var nodeMap = {};
             nodes.forEach(function(x) { nodeMap[x.user_id] = x; });
@@ -121,15 +168,6 @@ var nodeMap = {};
             });
 		}
 
-getUserRole(course_id,function(role){
-	$.each( output, function( key, value ) {
-		console.log(role.user_id);
-		console.log(value.user_id);
-	if(role.user_id==value.user_id){
-		$("#greet").append("<p>Hello, &nbsp; "+value.name);
-	}
-	});
-});
 var node_data = nodes.map(function (d) {return d.user_id});
 var edge_data = links.map(function (d) {return [d.source.user_id, d.target.user_id]; });
 
@@ -160,6 +198,32 @@ var degreeCent = function(g) {
     total += 1;
   });
   return counts;
+};
+
+var degreeCentOut = function(g){
+var counts;
+  var total = 0;
+  counts = {};
+  // Figure out which nodes have most links
+  g.links.forEach(function(i) {
+    if (counts[i["source"]]) {
+      counts[i["source"]] += 1;
+    }
+    else {
+      counts[i["source"]] = 1;
+    }
+//    if (counts[i["target"]]) {
+//      counts[i["target"]] += 1;
+//    }
+//    else {
+//      counts[i["target"]] = 1;
+//    }
+    total += 1;
+  });
+  return counts;
+
+
+
 };
 
 //var degree=degreeCent(graph);
@@ -405,7 +469,7 @@ function linkArc(d) {
     .style("z-index", "10")
     .style("width", "300px")
    // .style("height", "1000px")
-    .style("background-color", "rgba(230, 242, 255, 0.8)")
+    .style("background-color", "#98FB98")
     .style("border-radius", "5px")
     .style("visibility", "hidden")
     .text("");
@@ -568,7 +632,7 @@ var pageY = d3.event.pageY
 	}
     
        // place tooltip where cursor was
-       return tooltip.style("top", (pageY -10) + "px").style("left", (pageX + 10) + "px").style("visibility", visibility);
+       return tooltip.style("top", (pageY-10) + "px").style("left", (pageX + 10) + "px").style("visibility", visibility);
 
 	if (toggle == 0) {
 		      // Ternary operator restyles links and nodes if they are adjacent.
@@ -604,13 +668,71 @@ var pageY = d3.event.pageY
   }
 
 
+var betweenness = jsnx.betweennessCentrality(G);
+//var eigenvector = jsnx.eigenvectorCentrality(G);
+var clustering = jsnx.clustering(G);
+between=betweenness._numberValues;
+clust=clustering._numberValues;
 
-var db="";
-db+="<h4>Highlights</h4>";
+var maxb=0;
+var userb;
+var user_nameb;
+for(b in between){
+	if(between[b]>=maxb) {
+		maxb=between[b];
+		userb=b;
+	}
+}
+
+for(n in nodes){
+	console.log(nodes[n].user_id);
+	console.log(userb);
+	if(nodes[n].user_id==userb) user_nameb=nodes[n].name;
+}
+
+var maxc=0;
+var userc;
+var user_namec;
+for(c in clust){
+	if(clust[c]>=maxc) {
+		maxc=clust[c];
+		userc=c;
+	}
+}
+
+for(n in nodes){
+	console.log(nodes[n].user_id);
+	console.log(userb);
+	if(nodes[n].user_id==userc) user_namec=nodes[n].name;
+}
+
+
+var degout=degreeCentOut(graph);
+
+var maxd=0;
+var userd;
+var user_named;
+for(d in degout){
+	if(degout[d]>=maxd) {
+		maxd=degout[d];
+		userd=d;
+	}
+}
+
+for(n in nodes){
+	console.log(nodes[n].user_id);
+	console.log(userb);
+	if(nodes[n].user_id==userd) user_named=nodes[n].name;
+}
+
+
+var db="<div id=\"highlights\">";
+db+="<h4>Discussion Board Highlights</h4>";
 db+="<p>Total Participants: &nbsp; "+nodes.length;
 db+="<p>Total Interactions: &nbsp; "+links.length;
-db+="<p>Top Contributor: &nbsp;";
-db+="<p>Top Facilitator: &nbsp;";
+db+="<p>Top Contributor: &nbsp;"+user_named;
+db+="<p>Top Facilitator: &nbsp;"+user_nameb;
+db+="<p>Potential Top Friend:"+user_namec;
 db+="<p>Potential Team Leader(s): &nbsp;"
 console.log(links);
 jsnx.genFindCliques(G).then(function(cliques) {
@@ -627,12 +749,29 @@ jsnx.genFindCliques(G).then(function(cliques) {
 var largestClq=jsnx.graphCliqueNumber(G);
 console.log(largestClq);
 
-db+="<p>Size of largest group: &nbsp; "+largestClq;
+db+="<p>Size of largest group: &nbsp; "+largestClq+"<br>";
 
 //Return a list of nodes connected to node n.
 var neighbors=jsnx.neighbors(G,node_data[1]);
 console.log(neighbors);
 
+
+
+db+="<button class=\"btn-report\" name=\"btn-report\">Download Report</button>";
+
+//var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(output));
+//var dlAnchorElem = document.getElementById('downloadAnchorElem');
+//dlAnchorElem.setAttribute("href",     dataStr     );
+//dlAnchorElem.setAttribute("download", "data.json");
+//dlAnchorElem.click();
+
+
+
+
+
+
+
+db+="</div>";
 
 $("#db").append(db);
 console.log(db);
@@ -670,6 +809,7 @@ for (var d in degree){
 	if(node.user_id == d) deg=degree[d];
 }
 
+
 //		console.log(output);
 getUserRole(course_id,function(id){
 //console.log(id);
@@ -678,7 +818,7 @@ getUserRole(course_id,function(id){
 
 
 		htmlContent += "<div id=\"container-main\">";
-      htmlContent += "<h4>" + output.name +"  "+"<img width=20 height=20 src='"+output.image+"'><\/h4>";
+      htmlContent += "<h4>" + output.name +"<\/h4>";
 if(id.type!="student"){
 //	$("#sna").empty();
 	$("#sna").append("<br><h4>"+output.name+"  Details</h4>"
@@ -704,7 +844,7 @@ getLinks(course_id,topic_id,function(n){
 	entry['post']=n[i].post;
 		entries.push(entry);
 }
-console.log(entries);
+//console.log(entries);
 //});
 nodeNames=[];
 for(j=0;j<x.length;j++){
@@ -717,7 +857,7 @@ for(j=0;j<x.length;j++){
 if(posts){
 posts.forEach(pf);}
 //entries.forEach(ent);
-console.log(posts);
+//console.log(posts);
 
 
 
@@ -745,16 +885,16 @@ console.log(posts);
 			}
 			}
 	//		}
-htmlContent+="<div id='container-post-"+index+"'>"		
+htmlContent+="<div class=\"form-container-main\" id='container-post-"+index+"'>"		
       htmlContent += "<form id='postForm-"+index+ "' method=\"post\">"
 	htmlContent +="Date: <i>"+item.created_at+"</i><br>"     
       htmlContent+="Posted to: "+name+"</br>"
-	htmlContent+="<span id="+item.entry_id+">"
+	htmlContent+="<div class=\"text_div\" id="+item.entry_id+">"
 
 if(id.type!="student"){
-	htmlContent +=item.post+"</span><input type=\"button\" class=\"edit-btn\" value=\"Edit\"><br>"  }
+	htmlContent +=item.post+"<input type=\"button\" class=\"edit-btn\" value=\"Edit\"></div><br>"  }
 else{
-	htmlContent+=item.post+"<br>"
+	htmlContent+=item.post+"</div><div class='edit_div'></div><br>"
 }
 
       htmlContent += "<input type=\"button\" class=\"reply-btn\" value=\"Reply\">"
@@ -772,16 +912,20 @@ else{
       tooltip.html(htmlContent);
 
 
-		$(".edit-btn").on('click',function(){
+		$(".edit-btn").on('click',function(e){
 			//var text=$(this).attr("value");
 			//(this).form
 		//	var text=$("#"+item.entry_id).text();
-//			var id=item.entry_id;
-			$("span").hide();
+//		
+			//var id=item.entry_id;
+			
+			
+			e.preventDefault();
+		//	$(".text_div").hide();
 			var parent_id = $(this).parent().parent().attr('id');
-			var text = $(this).siblings("span").text();
+			var text = $(this).siblings(".text_div").text();
 			var htmlE= "";
-			htmlE+="<div>";
+			htmlE+="";
       htmlE += "<form id=\"editForm\" method=\"put\">"
 	htmlE +="<textarea id=\"editText\" class=\"text\" cols=\"40\" rows =\"4\" name=\"editText\">"+text+"</textarea><br>"     
 //	htmlContent+="Degree: "+deg
@@ -789,8 +933,10 @@ else{
       htmlE+="<input type=\"button\" class=\"cancel\" value=\"Cancel\">"
       htmlE += "<\/form>"
    
-   	htmlE += "<\/div>";	
-	$('#'+parent_id).append(htmlE);
+   	htmlE += "";	
+	
+	$("#postForm-"+index).replaceWith(htmlE);
+//	$('#'+parent_id).append(htmlE);
    //   tooltip.html(htmlContent);
 
 		

@@ -1,3 +1,85 @@
+#db{
+background-color:#F8F8F8;
+/*display:inline-block;*/
+text-align:left;
+border:1px solid #E6E6FA;
+position:relative;
+padding:10px;
+}
+
+#highlights{
+background-color:#F8F8F8;
+/*display:inline-block;*/
+text-align:left;
+border:1px solid #E6E6FA;
+position:relative;
+padding:10px;
+}
+#highlights h4{
+	padding:10px;
+text-align:center;
+}
+
+#db h4{
+	padding:10px;
+text-align:center;
+}
+
+#left h2{
+color:#708090;
+}
+
+
+.arrow {
+  border: solid black;
+  border-width: 0 2px 2px 0;
+  display: inline-block;
+  padding: 3px;
+}
+
+.right {
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
+
+
+.button{
+ background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 18px;
+  margin: 4px 2px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+  width:400px;
+}
+
+.menu-btn{
+background-color: white;
+  color: black;
+  border: 2px solid #e7e7e7;
+}
+
+.menu-btn:hover {background-color: #e7e7e7;}
+
+.reply-btn, .discuss-btn, .solve-btn, .comment-btn, .edit-btn {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 5px 8px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 12px;
+  margin: 2px 1px;
+  cursor: pointer;
+  width:70px;
+}
+
 #info {
    /* position: absolute; /*or fixed*/
 /*    right: 0px; */
@@ -52,6 +134,11 @@ h1{
  color:white;
 }
 
+h4{
+margin-block-start: 0.5em;
+ margin-block-end: 0.5em;
+}
+
 #c_name{
 font-size: 1.125rem;
 }
@@ -69,6 +156,23 @@ circle {
   border-radius: 50%;
   border: 1px solid rgba(0,0,0,0.2);    
   z-index:9;
+}
+
+.text_div{
+width:280px;
+height:100px;
+/*padding:5px;*/
+background-color:#F8F8F8;
+/*display:inline-block;*/
+text-align:left;
+border:1px solid #E6E6FA;
+position:relative;
+}
+
+.edit-btn{
+position:absolute;
+     top:0;
+     right:0;
 }
 
 /*.show_form {
@@ -120,6 +224,9 @@ circle {
   padding: 05px;
   background-color: white;
 }
+
+
+
 
 .open_form {
 	display: none;

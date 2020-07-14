@@ -550,8 +550,32 @@ print_r($jbody);
 return $jbody;
 }
 
+//gets authentication events from canvas
+function getAuth() {
+  global $client;
+  try {
 
+  $header = array("Authorization"=>"Bearer 1053~fxYAgG5UpmgrQsewTrOiJPlzprK1ElHCmCiwmhu8CW2Sz8FXS6kZ2lll32S1w58S");
 
+  $response = $client->request('get','audit/authentication/users/self',['headers'=>$header]);
+//print_r($response);
+} catch (Exception $e) {
+  print "There was an error getting authentication events from canvas";
+  header("content-type: application/json",true);
+  print_r($e);
+  $a=print_r($e,true);
+  error_log($a);
+  exit;
+}
+$body = (string) $response->getBody();
+$jbody = json_decode($body);
+if (!$jbody) {
+  error_log("no json");
+  exit;
+}
+//print_r($jbody);
+return $jbody;
+}
 
 
 ?>

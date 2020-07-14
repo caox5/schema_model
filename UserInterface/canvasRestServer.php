@@ -47,6 +47,13 @@ if ($method == "get" &&  sizeof($parts) == 3 && $parts[0] == "api"  && $parts[1]
 	sendJSON("OK","",$retData);
 }
 
+
+else if ($method == "get" &&  sizeof($parts) == 6 && $parts[0] == "api"  && $parts[1] == "v1" && $parts[2] == "audit" && $parts[3] == "authentication" && $parts[4] == "users" && $parts[5] == "self") {
+	$authevents = getAuth();
+	$retData = array("events"=>$authevents);
+	sendJSON("OK","",$retData);
+}
+
 else if ($method == "get" &&  sizeof($parts) == 4 && $parts[0] == "api"  && $parts[1] == "v1" && $parts[2] == "courses") {
 	$course_id = intval($parts[3]);
 	$course = getCourseByID($course_id);
