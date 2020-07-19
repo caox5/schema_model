@@ -780,6 +780,7 @@ console.log(db);
   function loadTooltipContent(node) {
 //	  console.log(node);
 	  //toggle=0;
+	  $("#sna").empty();
 	  $(".tooltip").empty();
 	  uid=node.user_id;
 	  getUserEntries(course_id,topic_id,uid,function(output){
@@ -792,17 +793,43 @@ var betweenness = jsnx.betweennessCentrality(G);
 var clustering = jsnx.clustering(G);
 between=betweenness._numberValues;
 clust=clustering._numberValues;
+var degO=degreeCentOut(graph);
 for(b in between){
 	if(node.user_id == b) bet=between[b];
 }
 for(c in clust){
 	if(node.user_id == c) clu=clust[c];
 }
-for (var d in degree){
+for (var d in degO){
 //console.log(d);
 //console.log(degree[d]);
-	if(node.user_id == d) deg=degree[d];
+	if(node.user_id == d) deg=degO[d];
 }
+
+var neighbors=jsnx.neighbors(G,node.user_id);
+console.log(neighbors);
+
+
+function strip(html){
+   var doc = new DOMParser().parseFromString(html, 'text/html');
+   return doc.body.textContent || "";
+}
+
+
+allposts=output.posts;
+console.log(allposts);
+var rcount=0,dcount=0,scount=0,ccount=0;
+for(p in allposts){
+	var post=strip(allposts[p].post);
+//	console.log(post.substring(0,1));
+	if(post.substring(0,1)=='r') rcount++;
+	if(post.substring(0,1)=='s') scount++;
+	if(post.substring(0,1)=='d') dcount++;
+	if(post.substring(0,1)=='c') ccount++;
+
+}
+
+
 
 
 //		console.log(output);
@@ -817,10 +844,18 @@ getUserRole(course_id,function(id){
 if(id.type!="student"){
 //	$("#sna").empty();
 	$("#sna").append("<br><h4>"+output.name+"  Details</h4>"
-		+"<p>Interactions Frequency: "+deg+"<br>"
-		+"Most Interacted with: ");
+		+"<p>Interactions Frequency: "+deg
+		+"<p>Most Interacted with: "
+		+"<p>Replies Made: "+rcount
+		+"<p>Comments Made: "+ccount
+		+"<p>Discussions Made: "+dcount
+		+"<p>Solutions Made: "+scount
+	
+	
+	);
 
 }
+
 //});
 //      htmlContent += "<img width=10 height=10 src='"+output.image+"'><br>"
 var entries=[];
@@ -859,7 +894,6 @@ posts.forEach(pf);}
 
 
 
-
 		function pf(item,index){
 	//		if(typeof entries==='undefined'){
 			for(j=0;j<nodeNames.length;j++){
@@ -887,10 +921,12 @@ htmlContent+="<div class=\"form-container-main\" id='container-post-"+index+"'>"
       htmlContent+="Posted to: "+name+"</br>"
 	htmlContent+="<div class=\"text_div\" id="+item.entry_id+">"
 
+
+//console.log(strip(item.post));
 if(id.type!="student"){
-	htmlContent +="<br><br><span id=\"formText-"+index+"\">"+item.post+"</span><input type=\"button\" class=\"edit-btn\" value=\"Edit\"></div><br>"  }
+	htmlContent +="<br><span class=\"formText\" id=\"formText-"+index+"\">"+strip(item.post).substring(2)+"</span><input type=\"button\" class=\"edit-btn\" value=\"Edit\"></div><br>"  }
 else{
-	htmlContent+="<br><br><span id=\"formText-"+index+"\">"+item.post+"</span></div><br>"
+	htmlContent+="<br><br><span class=\"formText\" id=\"formText-"+index+"\">"+strip(item.post).substring(2)+"</span></div><br>"
 }
 htmlContent+="<div class=\"replace-edit-div\"></div>"
       htmlContent += "<input type=\"button\" class=\"reply-btn\" value=\"Reply\">"
@@ -924,7 +960,7 @@ htmlContent+="<div class=\"replace-edit-div\"></div>"
 			var htmlE= "";
 			htmlE+="";
       htmlE += "<div class=\"edit-form-container\"><form id=\"editForm-"+parent_id+"\" class=\"editForm\" method=\"put\">"
-	htmlE +="<textarea id=\"editText-"+parent_id+"\" class=\"editText\" cols=\"40\" rows =\"4\" name=\"editText\">"+text+"</textarea><br>"     
+	htmlE +="<textarea id=\"editText-"+parent_id+"\" class=\"editText\" cols=\"37\" rows =\"4\" name=\"editText\">"+text+"</textarea><br>"     
 //	htmlContent+="Degree: "+deg
       htmlE += "<input type=\"submit\" class=\"edit\" value=\"Edit\">"
       htmlE+="<input type=\"button\" class=\"cancel\" value=\"Cancel\">"
@@ -1006,12 +1042,13 @@ $('#replyForm').submit(function(e) {
 		names[this.value]=$(this).val();
 	});
 var reply=values['postText'];
+var new_reply='r-'+reply;
 var rel_type=names['Reply'];
 console.log(rel_type);
 var entry_id=$('.text_div').attr('id');
 	console.log(entry_id);
 	if(entry_id==topic_id){
-	createDiscussionTopicEntry(course_id,topic_id,reply);
+	createDiscussionTopicEntry(course_id,topic_id,new_reply);
 		$(this).parent().hide();
 	$(".tooltip").hide();
 		$("#graph").empty();
@@ -1019,7 +1056,7 @@ var entry_id=$('.text_div').attr('id');
 		showAllData(course_id,topic_id,callback);
 	}		
 	else{
-	createDiscussionEntryReply(course_id,topic_id,entry_id,reply);
+	createDiscussionEntryReply(course_id,topic_id,entry_id,new_reply);
 		$(this).parent().hide();
 		$(".tooltip").hide();
 		$("#graph").empty();
@@ -1068,11 +1105,12 @@ $('#commentForm').submit(function(e) {
 		names[this.value]=$(this).val();
 	});
 var reply=values['postText'];
+var new_comment='c-'+reply;
 var rel_type=names['Comment'];
 console.log(rel_type);
 var entry_id=$(".text_div").attr('id');
 	if(entry_id==topic_id){
-	createDiscussionTopicEntry(course_id,topic_id,reply);
+	createDiscussionTopicEntry(course_id,topic_id,new_comment);
 		$(this).parent().hide();
 	$(".tooltip").hide();
 		$("#graph").empty();
@@ -1080,7 +1118,7 @@ var entry_id=$(".text_div").attr('id');
 		showAllData(course_id,topic_id,callback);
 	}		
 	else{
-	createDiscussionEntryReply(course_id,topic_id,entry_id,reply);
+	createDiscussionEntryReply(course_id,topic_id,entry_id,new_comment);
 		$(this).parent().hide();
 		$(".tooltip").hide();
 		$("#graph").empty();
@@ -1131,11 +1169,12 @@ $('#discussForm').submit(function(e) {
 		names[this.value]=$(this).val();
 	});
 var reply=values['postText'];
+var new_discuss='d-'+reply;
 var rel_type=names['Discuss'];
 console.log(rel_type);
 var entry_id=$(".text_div").attr('id');
 	if(entry_id==topic_id){
-	createDiscussionTopicEntry(course_id,topic_id,reply);
+	createDiscussionTopicEntry(course_id,topic_id,new_discuss);
 		$(this).parent().hide();
 	$(".tooltip").hide();
 		$("#graph").empty();
@@ -1143,7 +1182,7 @@ var entry_id=$(".text_div").attr('id');
 		showAllData(course_id,topic_id,callback);
 	}		
 	else{
-	createDiscussionEntryReply(course_id,topic_id,entry_id,reply);
+	createDiscussionEntryReply(course_id,topic_id,entry_id,new_discuss);
 		$(this).parent().hide();
 		$(".tooltip").hide();
 		$("#graph").empty();
@@ -1195,11 +1234,12 @@ $('#solveForm').submit(function(e) {
 		names[this.value]=$(this).val();
 	});
 var reply=values['postText'];
+var new_solve='s-'+reply;
 var rel_type=names['Solve'];
 console.log(rel_type);
 var entry_id=$(".text_div").attr('id');
 	if(entry_id==topic_id){
-	createDiscussionTopicEntry(course_id,topic_id,reply);
+	createDiscussionTopicEntry(course_id,topic_id,new_solve);
 		$(this).parent().hide();
 	$(".tooltip").hide();
 		$("#graph").empty();
@@ -1207,7 +1247,7 @@ var entry_id=$(".text_div").attr('id');
 		showAllData(course_id,topic_id,callback);
 	}		
 	else{
-	createDiscussionEntryReply(course_id,topic_id,entry_id,reply);
+	createDiscussionEntryReply(course_id,topic_id,entry_id,new_solve);
 		$(this).parent().hide();
 		$(".tooltip").hide();
 		$("#graph").empty();
