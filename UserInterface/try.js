@@ -14,7 +14,6 @@ function showDiscussions(course_id,callback){
 	$("#intro").empty();
 	$("#intro").append("<h3><i>Please select a discussion topic: </i></h3>");
 	getCourse(course_id,function(course){
-//	$("#db").empty();
 	$("#db").append("<h4>Course Details</h4><p>Course Name: <i>"+course.course.name+"</i><p>Start Date: <i>"+course.course.start_at+"</i>");	
 	if(course.course.end_at) {
 		$("#db").append("<p>"+course.course.end_at);
@@ -30,8 +29,6 @@ $.each(output.discussions_topics,function(k,v){
 		$("body").on('click', "button[name=topic-btn]", function() {
   			var text = $(this).attr("value");
   			$("#c_name").append(" <i class=\"arrow right\"></i>&nbsp; "+"<a id=\"topic_link\">"+text+"</a>");
-//			$("#d").hide();
-//	$("#db").hide();	
 			});
 	});
 	}
@@ -111,10 +108,8 @@ function showAllCourses(callback){
 			var home_link=document.getElementById('home_link');
 			if(home_link){
 			home_link.onclick=showAllCourses;}
-	//		var course_link=document.getElementById('course_link');
-	//		course_link.onclick=showDiscussions(v.id,v.name);
-		});
-       });
+			});
+       		});
 	});
 }	
 
@@ -870,9 +865,9 @@ posts.forEach(pf);}
 			for(j=0;j<nodeNames.length;j++){
 				if(nodeNames[j].user_id==topic_id)
 				var name=nodeNames[j].name;
-			}
+		//	}
 	//				}			
-	//		else{
+			else{
 			for(i=0;i<entries.length;i++){
 				if(entries[i].post_id==item.entry_id){ 
 					var posted_to=entries[i].target;	
@@ -884,7 +879,8 @@ posts.forEach(pf);}
 				}
 			}
 			}
-	//		}
+			}
+			}
 htmlContent+="<div class=\"form-container-main\" id='container-post-"+index+"'>"		
       htmlContent += "<form id='postForm-"+index+ "' method=\"post\">"
 	htmlContent +="Date: <i>"+item.created_at+"</i><br>"     
@@ -892,11 +888,11 @@ htmlContent+="<div class=\"form-container-main\" id='container-post-"+index+"'>"
 	htmlContent+="<div class=\"text_div\" id="+item.entry_id+">"
 
 if(id.type!="student"){
-	htmlContent +=item.post+"<input type=\"button\" class=\"edit-btn\" value=\"Edit\"></div><br>"  }
+	htmlContent +="<br><br><span id=\"formText-"+index+"\">"+item.post+"</span><input type=\"button\" class=\"edit-btn\" value=\"Edit\"></div><br>"  }
 else{
-	htmlContent+=item.post+"</div><div class='edit_div'></div><br>"
+	htmlContent+="<br><br><span id=\"formText-"+index+"\">"+item.post+"</span></div><br>"
 }
-
+htmlContent+="<div class=\"replace-edit-div\"></div>"
       htmlContent += "<input type=\"button\" class=\"reply-btn\" value=\"Reply\">"
       htmlContent += "<input type=\"button\" class=\"comment-btn\" value=\"Comment\">"	
       htmlContent += "<input type=\"button\" class=\"discuss-btn\" value=\"Discuss\">"
@@ -905,7 +901,7 @@ else{
       htmlContent += "<\/form>"
    htmlContent+="</div>"
 //		});
-	}
+//	}
 //});
 //});
    htmlContent += "<\/div>"	
@@ -922,56 +918,53 @@ else{
 			
 			e.preventDefault();
 		//	$(".text_div").hide();
-			var parent_id = $(this).parent().parent().attr('id');
-			var text = $(this).siblings(".text_div").text();
+			var parent_id = $(this).parent().attr('id');
+			console.log(parent_id);
+			var text = $(this).parent(".text_div").text();
 			var htmlE= "";
 			htmlE+="";
-      htmlE += "<form id=\"editForm\" method=\"put\">"
-	htmlE +="<textarea id=\"editText\" class=\"text\" cols=\"40\" rows =\"4\" name=\"editText\">"+text+"</textarea><br>"     
+      htmlE += "<div class=\"edit-form-container\"><form id=\"editForm-"+parent_id+"\" class=\"editForm\" method=\"put\">"
+	htmlE +="<textarea id=\"editText-"+parent_id+"\" class=\"editText\" cols=\"40\" rows =\"4\" name=\"editText\">"+text+"</textarea><br>"     
 //	htmlContent+="Degree: "+deg
       htmlE += "<input type=\"submit\" class=\"edit\" value=\"Edit\">"
       htmlE+="<input type=\"button\" class=\"cancel\" value=\"Cancel\">"
-      htmlE += "<\/form>"
+      htmlE += "<\/form></div>"
    
    	htmlE += "";	
-	
-	$("#postForm-"+index).replaceWith(htmlE);
+var entry_id=$(this).parent().attr('id');
+var ind=$(this).parent().children('span').attr('id');
+var ind_text=$(this).parent().children('span').text();
+console.log(ind);	
+//	$("#"+item.entry_id).replaceWith(htmlE);
+	$("#"+ind).empty();
+	$("#"+ind).append(htmlE);		
 //	$('#'+parent_id).append(htmlE);
    //   tooltip.html(htmlContent);
-
+//		});
 		
-$('#editForm').submit(function(e) {
+$('.editForm').submit(function(e) {
 	e.preventDefault();
-    var $inputs = $('#editForm :input');
+    var $inputs = $('.editForm :input');
     var values = {};
     $inputs.each(function() {
         values[this.name] = $(this).val();
     });
-//	console.log($inputs);
+	console.log($inputs);
 var etext=values['editText'];
-//	console.log(values);
-var entry_id=$(this).parent().siblings("form").children("span").attr('id');
+	console.log(etext);
+//var entry_id=$(this).parent().siblings("form").children("span").attr('id');
 //	console.log(output);
 	updateDiscussionTopicEntry(course_id,topic_id,entry_id,etext);
-	$("#editForm").hide();
+	$(".editForm").hide();
 	loadTooltipContent(node);
-//	getUserEntries(course_id,topic_id,uid,function(ui){
-//		p=ui.posts;
-//		console.log(p);
-//		for(i=0;i<p.length;i++){
-//			$("#"+p[i].entry_id).empty();
-//			$("#"+p[i].entry_id).append(p[i].post);
-//		}
-//			$("span").show();
-//		}
-//	});
-//	$(".tooltip").hide();
-//	$(".tooltip").show();
+	$(".tooltip").show();
 });
 
 $('.cancel').click(function() {
-    $(this).parent().hide();
-	$("span").show();
+    $(".edit-form-container").hide();
+	console.log(ind_text);
+	$("#"+ind).empty();
+	$("#"+ind).append(ind_text);
 });
 
 	});
@@ -1015,7 +1008,8 @@ $('#replyForm').submit(function(e) {
 var reply=values['postText'];
 var rel_type=names['Reply'];
 console.log(rel_type);
-var entry_id=$(this).parent().siblings('form').children('span').attr('id');
+var entry_id=$('.text_div').attr('id');
+	console.log(entry_id);
 	if(entry_id==topic_id){
 	createDiscussionTopicEntry(course_id,topic_id,reply);
 		$(this).parent().hide();
@@ -1076,7 +1070,7 @@ $('#commentForm').submit(function(e) {
 var reply=values['postText'];
 var rel_type=names['Comment'];
 console.log(rel_type);
-var entry_id=$(this).parent().siblings('form').children('span').attr('id');
+var entry_id=$(".text_div").attr('id');
 	if(entry_id==topic_id){
 	createDiscussionTopicEntry(course_id,topic_id,reply);
 		$(this).parent().hide();
@@ -1139,7 +1133,7 @@ $('#discussForm').submit(function(e) {
 var reply=values['postText'];
 var rel_type=names['Discuss'];
 console.log(rel_type);
-var entry_id=$(this).parent().siblings('form').children('span').attr('id');
+var entry_id=$(".text_div").attr('id');
 	if(entry_id==topic_id){
 	createDiscussionTopicEntry(course_id,topic_id,reply);
 		$(this).parent().hide();
@@ -1203,7 +1197,7 @@ $('#solveForm').submit(function(e) {
 var reply=values['postText'];
 var rel_type=names['Solve'];
 console.log(rel_type);
-var entry_id=$(this).parent().siblings('form').children('span').attr('id');
+var entry_id=$(".text_div").attr('id');
 	if(entry_id==topic_id){
 	createDiscussionTopicEntry(course_id,topic_id,reply);
 		$(this).parent().hide();
@@ -1234,7 +1228,7 @@ $('.cancel').click(function() {
 
 
 
-
+}
 });
 });
 });
