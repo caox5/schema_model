@@ -5,7 +5,7 @@ float:left;
 
 
 
-#db{
+#db1{
 background-color:#F8F8F8;
 /*display:inline-block;*/
 text-align:left;
@@ -20,10 +20,10 @@ background-color:#F8F8F8;
 text-align:left;
 border:1px solid #E6E6FA;
 position:relative;
-padding:10px;
+padding:5px;
 }
 #highlights h4{
-	padding:10px;
+	padding:2px;
 text-align:center;
 
 }
@@ -31,6 +31,13 @@ text-align:center;
   text-align:center;
  margin: 0 auto;
 }
+
+/*
+#demo1{
+overflow: visible;
+}
+*/
+
 
 #db h4{
 	padding:10px;
@@ -131,10 +138,16 @@ border-bottom:1px solid #C7CDD1 ;
 height:15%
 }
 
+.style1 {
+font-size: 15px;
+text-align:center;
+} 
+
+
 
 #left{
 float:left;
-width:74%;
+width:69%;
 overflow:auto;
 /*border-right:1px solid #C7CDD1;*/
 margin:auto;
@@ -142,10 +155,11 @@ text-align:center;
 }
 #right{
 float:left;
-width:25%;
+width:29%;
 border:1px;
 position:relative;
-text-align:left;
+background-color:#F8F8F8;
+text-align:center;
 }
 
 #tool{

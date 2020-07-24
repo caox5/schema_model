@@ -14,9 +14,9 @@ function showDiscussions(course_id,callback){
 	$("#intro").empty();
 	$("#intro").append("<h3><i>Please select a discussion topic: </i></h3>");
 	getCourse(course_id,function(course){
-	$("#db").append("<h4>Course Details</h4><p>Course Name: <i>"+course.course.name+"</i><p>Start Date: <i>"+course.course.start_at+"</i>");	
+	$("#db1").append("<h4>Course Details</h4><p>Course Name: <i>"+course.course.name+"</i><p>Start Date: <i>"+course.course.start_at+"</i>");	
 	if(course.course.end_at) {
-		$("#db").append("<p>"+course.course.end_at);
+		$("#db1").append("<p>"+course.course.end_at);
 	}
 		//console.log(course.course);
 
@@ -85,7 +85,7 @@ function getAuth(callback) {
 function showAllCourses(callback){
 	getAuth(function (data){
 	$("#greet").html("<h2>Welcome, "+data.events.linked.users[0].name+"!</h2>");
-		$("#db").html("<h4>About This Tool</h4><p><i>This user interface is a  graphical representation of Canvas LMS discussion board based on a schema with a goal to make discussion boards more structured. <br>This is a Web 2.0 tool created mainly with the help of PHP, Javascript, Ajax, jQuery and D3.js where all the data is manipulated using Canvas LMS REST API.<br><p>Author: Hemraj Ojha</i>");
+		$("#db1").html("<h4>About This Tool</h4><p><i>This user interface is a  graphical representation of Canvas LMS discussion board based on a schema with a goal to make discussion boards more structured. <br>This is a Web 2.0 tool created mainly with the help of PHP, Javascript, Ajax, jQuery and D3.js where all the data is manipulated using Canvas LMS REST API.<br><p>Author: Hemraj Ojha</i>");
 		$("#intro").html("<h3><i>Please select a course to begin:</i></h3>");
 	$("#c_name").append("<a href=\"index.html\" id=\"home link\">Home</a>");	
 
@@ -103,7 +103,7 @@ function showAllCourses(callback){
 			$("#c_name").append( " <i class=\"arrow right\"></i>&nbsp; "+"<a id=\"course_link\">"+text+"</a>");
 			$("#c").hide();
 			$("#intro").empty();
-			$("#db").empty();
+			$("#db1").empty();
 			$("#greet").hide();
 			var home_link=document.getElementById('home_link');
 			if(home_link){
@@ -146,7 +146,7 @@ getDiscussionTopic(course_id,topic_id,function(topic){
 			allwords+=post+" ";	
 		}
 		}
-console.log(allwords);
+//console.log(allwords);
 
 stopwords = new Set("1,2,3,4,5,6,7,8,9,i,me,my,myself,we,us,our,ours,ourselves,you,your,yours,yourself,yourselves,he,him,his,himself,she,her,hers,herself,it,its,itself,they,them,their,theirs,themselves,what,which,who,whom,whose,this,that,these,those,am,is,are,was,were,be,been,being,have,has,had,having,do,does,did,doing,will,would,should,can,could,ought,i'm,you're,he's,she's,it's,we're,they're,i've,you've,we've,they've,i'd,you'd,he'd,she'd,we'd,they'd,i'll,you'll,he'll,she'll,we'll,they'll,isn't,aren't,wasn't,weren't,hasn't,haven't,hadn't,doesn't,don't,didn't,won't,wouldn't,shan't,shouldn't,can't,cannot,couldn't,mustn't,let's,that's,who's,what's,here's,there's,when's,where's,why's,how's,a,an,the,and,but,if,or,because,as,until,while,of,at,by,for,with,about,against,between,into,through,during,before,after,above,below,to,from,up,upon,down,in,out,on,off,over,under,again,further,then,once,here,there,when,where,why,how,all,any,both,each,few,more,most,other,some,such,no,nor,not,only,own,same,so,than,too,very,say,says,said,shall".split(","))
 
@@ -180,11 +180,11 @@ function wordFrequency(txt){
 var words=wordFrequency(words);
 //console.log(JSON.stringify(wordFrequency(words).sort(function(a,b){return a.size<b.size})).split("},").join("}"));
 
-console.log(words);
+//console.log(words);
 		
-var words = words.filter(function (el) {
-  return el.size > 1;
-});
+//var words = words.filter(function (el) {
+//  return el.size > 1;
+//});
 
 function compare( a, b ) {
   if ( a.size < b.size ){
@@ -201,16 +201,16 @@ if(words.length>10) words=words.slice(0,10);
 
 var color = d3.scaleOrdinal(d3.schemeCategory20);
 
-console.log(words);
+callback(words);
 
 var maxSize = d3.max(words, function (d) {return d.size;});
 var minFont = d3.min(words, function (d) {return d.size;});
 maxFont=maxSize;
-console.log(maxFont);
-console.log(minFont);
+//console.log(maxFont);
+//console.log(minFont);
 var fontSizeScale = d3.scalePow().exponent(5).domain([0,1]).range([ minFont, maxFont]);
 
-console.log(fontSizeScale);
+//console.log(fontSizeScale);
 //var layout = d3.layout.cloud()
 //    .size([400, 300])
 //    .words(words)
@@ -219,7 +219,7 @@ console.log(fontSizeScale);
 
 function zoomToFitBounds(width,height) {
 
-var cloud=d3.select("#demo1");
+var cloud=d3.select("#demo1").select("g");
       var X0 = d3.min( words, function (d) {
         return d.x - (d.width/2);
       }),
@@ -242,18 +242,25 @@ var cloud=d3.select("#demo1");
       var translateX = Math.abs(X0) * scale;
       var translateY = Math.abs(Y0) * scale;
 
-   //   cloud.attr("transform", "translate(" +
-   //     translateX + "," + translateY + ")" +
-   //     " scale(" + scale + ")");
+      cloud.attr("transform", "translate(" +
+        translateX + "," + translateY + ")" +
+        " scale(" + scale + ")");
+//console.log(scale);
 }
 
 var layout = d3.layout.cloud()
-    .size([200, 200])
+    .size([300, 300])
     .words(words)
     .padding(5)
     .rotate(function() { return ~~(Math.random() * 2) * 90; })
     .font("Impact")
-    .fontSize(function(d) { return fontSizeScale(d.size/maxSize); })
+    .fontSize(function(d) { 
+	    
+//	    if(maxSize==1) return d.size*6;
+//	    if(maxSize==2) return d.size*3;
+//	    if(maxSize==3) return d.size*2;
+	    return d.size;
+	 })
     .on("end", draw);
 
 layout.start();
@@ -268,27 +275,29 @@ function draw(words) {
       .attr("width", layout.size()[0])
       .attr("height", layout.size()[1])
     .append("g")
-      .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
+      .attr("transform", "translate(" + layout.size()[0]/2  + "," + layout.size()[1]/2  + ")")
+
+//<text text-anchor="middle" x="60" y="75">Person Name Here</text>
     .selectAll("text")
       .data(words)
     .enter().append("text")
-      .style("font-size", function(d) { return d.size; })
+      .style("font-size", function(d){
+	      Math.sqrt(d.size *100) })
+	     // function(d) { return d.size; })
       .style("font-family", "Impact")
-	.style("fill", function(d) {
-            return color(i);
-        })
+	.style("fill",(d, i) => color(i) )
       .attr("text-anchor", "middle")
       .attr("transform", function(d) {
         return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
       })
       .text(function(d) { return d.text; });
 
-//zoomToFitBounds(width,height);	
+	
+//	zoomToFitBounds(width,height);	
 }
 
 
-
-callback(words);
+//callback(words);
 //});
 });
 });
@@ -301,14 +310,18 @@ function showAllData(course_id,topic_id,callback){
 	$("#highlights").empty();
 	$("#greet").empty();
 	$("#intro").empty();
-	$("#db").empty();
-	$("#db").show();
+	$("#db1").empty();
+//	$("#wc_title").empty();
+//	$("#ts_title").empty();
+	$("#db1").show();
 	//	$("#c").empty();
 //	$("#d").empty();
 
 
 	var alldata={};
 	var d={};
+
+
 	getNodes(course_id,topic_id,function(output){
 	alldata['nodes'] = output;
 	getLinks(course_id,topic_id,function(data){
@@ -844,6 +857,8 @@ clust=clustering._numberValues;
 
 //console.log(clust);
 
+
+
 var maxb=0;
 var userb;
 var user_nameb;
@@ -902,6 +917,48 @@ for(n in nodes){
 
 
 
+console.log(degree);
+console.log(between);
+console.log(clust);
+
+var avg=[];
+var sum=0;
+for(d in degree){
+	for(c in clust){
+		for(b in between){
+			var val={};
+			sum=0;
+			if(d==b&&d==c&&b==c) {
+				average=(degree[d]+clust[c]+between[b])/3;
+				val['id']=b;
+				val['value']=average;
+				avg.push(val);
+			}
+		}
+	}
+}
+
+console.log(avg);
+var max_v=avg[0].value;
+var max_id=avg[0].id;
+for(i=1;i<avg.length;i++){
+	if(avg[i].value>=max_v) {
+		max_v=avg[i].value;	
+		max_id=avg[i].id;
+}
+}
+console.log(max_id);
+
+for(n in nodes){
+	if(nodes[n].user_id==max_id) user_name_max=nodes[n].name;
+}
+console.log(user_name_max);
+
+
+
+
+
+
 function show_time_series(){
 function zip() {
     var args = [].slice.call(arguments);
@@ -922,14 +979,14 @@ getDiscussionTopic(course_id,topic_id,function(to){
 		to=to.discussions_topic;
 		var start_date=new Date(to.created_at.substring(0,10));
 		var last_date=new Date(to.last_reply_at.substring(0,10));  
-		console.log(start_date);
-		console.log(last_date);  
+//		console.log(start_date);
+//		console.log(last_date);  
 		var pdates=[];
 		if(ent){
 	for(e=0;e<ent.length;e++){
 		var d=ent[e].date;
 		d=new Date(d.substring(0,10));
-		console.log(d);
+//		console.log(d);
 		if(d) pdates.push(d);
 	}
 		}
@@ -941,7 +998,7 @@ return a-b;
 
 		
 
-console.log(pdates);
+//console.log(pdates);
 	
 // Returns an array of dates between the two dates
 var getDates = function(startDate, endDate) {
@@ -962,7 +1019,7 @@ var getDates = function(startDate, endDate) {
 // Usage
 var dates = getDates(start_date, last_date);                                                                                                           
 dates.forEach(function(date) {
-  console.log(date);
+//  console.log(date);
 });		
 
 //getDates(start_date,last_date);
@@ -974,22 +1031,32 @@ for(i=0;i<dates.length;i++){
 //	var from=dates[i];
 //	var to=dates[i+1];
 	for(j=0;j<pdates.length;j++){
+
+		if(dates[i+1]){
+
 		if(pdates[j]>=dates[i]  && pdates[j]<dates[i+1]){ 
 			count++;
-			console.log("week "+i+" "+pdates[j]);
+//			console.log("week "+i+" "+pdates[j]);
 		}
+
+
+
+		}
+		else{
+			//if(pdates[j]<=dates[i]) count++;
+			if(pdates[j]>=dates[i]) count++;
+		}
+
+
+
+
+
 	}
 	data.push(count); 
 }
 
-console.log(data);
+//console.log(data);
 
-//	var data = [183.1, 183.9, 163.1, 179.5, 181.4,
-//				173.4, 167.6, 177.4, 171.7, 170.1,
-//				163.7, 151.9, 145.4, 145.0, 138.9];
-//	var time = [1917, 1918, 1919, 1920, 1921,
-//				1922, 1923, 1924, 1925, 1926,
-//				1927, 1928, 1929, 1930, 1931];
 var time=[];
 for(i=0;i<dates.length;i++){
  time[i]=i+1; }
@@ -998,11 +1065,11 @@ var ts = tstModule.timeseries.Timeseries(data, time);
 	var tslog_plot = ts.log().toPlot();
 	
 	var lsq = tstModule.statistics.least_squares_fit(time, data);
-console.log(lsq);
+//console.log(lsq);
 	var lsq_line = [];
 	lsq_line.push([1, 1*lsq[1] + lsq[0]]);
 	lsq_line.push([dates.length, dates.length*lsq[1] + lsq[0]]);
-	console.log(lsq_line);
+//	console.log(lsq_line);
 	
 	var plot_data = zip(time, data);
 	
@@ -1017,7 +1084,6 @@ console.log(lsq);
 	var skew = tstModule.statistics.skewness(data);
 
 $.plot($("#placeholder"), [ts_plot], {});
-
 console.log("Mean: "+mean);
 console.log("Variance: "+v);
 console.log("Skewness: "+skew);
@@ -1031,21 +1097,23 @@ console.log("Skewness: "+skew);
 
 show_time_series();
 
+
+
+
+
+
 getAllWords(course_id,topic_id,function(w){
 console.log(w);
 
-  var mean = tstModule.statistics.avg([10, 7.7, 14.5]); //=> 10.733333
-console.log(mean);
 
-//});
 var top_words="";
 
-	if(w.length>3) { var top=w.slice(0,3); console.log(top); } else {top=w;}
-for(t in top){
-	top_words+=top[t].text+", ";
+	if(w.length>3) { var top=w.slice(0,3);  } else {var top=w;}
+for(i=0;i<top.length;i++){
+	top_words+=top[i].text+", ";
 }
 
-top_words=top_words.substring(0,top_words.length-1);
+top_words=top_words.substring(0,top_words.length-2);
 
 console.log(top_words);
 var dbh="<div id=\"highlights\">";
@@ -1054,11 +1122,11 @@ $("#db1").append(dbh);
 //db+="<svg id=\"demo1\" width=\"400\" height=\"300\"></svg>";
 var db="<p>Total Participants: &nbsp; "+nodes.length;
 db+="<p>Total Interactions: &nbsp; "+links.length;
-db+="<p>Top 3 terms: "+top_words;
+db+="<p>Top term(s): &nbsp;"+top_words;
 db+="<p>Top Contributor: &nbsp;"+user_named;
 db+="<p>Top Facilitator: &nbsp;"+user_nameb;
-db+="<p>Potential Top Friend:"+user_namec;
-db+="<p>Potential Team Leader(s): &nbsp;"
+db+="<p>Potential Top Friend: &nbsp;"+user_namec;
+db+="<p>Potential Team Leader(s): &nbsp;"+user_name_max;
 //console.log(links);
 jsnx.genFindCliques(G).then(function(cliques) {
 //  console.log(cliques);
