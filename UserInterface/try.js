@@ -18,7 +18,7 @@ function showDiscussions(course_id,callback){
 	if(course.course.end_at) {
 		$("#db").append("<p>"+course.course.end_at);
 	}
-		console.log(course.course);
+		//console.log(course.course);
 
 	});
 
@@ -94,7 +94,7 @@ function showAllCourses(callback){
 		var active_courses=courses.filter(function (el){
 		return el.restrict_enrollments_to_course_dates==false;
 		});
-		$.each(active_courses,function(k,v){
+		$.each(courses,function(k,v){
 			$("#course").append("<br><button class=\"button menu-btn\" name='course-btn' value='"+v.name+"' onclick='showDiscussions("+v.id+")'>"+v.name+"</button>");
 		});	
 		$("body").on('click',"button[name=course-btn]",function(){
@@ -124,6 +124,178 @@ function getCourse(course_id,callback) {
         }});
 }
 
+function strip(html){
+   var doc = new DOMParser().parseFromString(html, 'text/html');
+   return doc.body.textContent || "";
+}
+
+function getAllWords(course_id,topic_id,callback){
+var allwords="";
+getDiscussionTopic(course_id,topic_id,function(topic){
+	if(topic.discussions_topic)
+	allwords+=strip(topic.discussions_topic.message)+" ";
+	getLinks(course_id,topic_id,function(links){
+		console.log(links);
+		if(links){
+		for(link in links){
+			post=strip(links[link].post);
+			if(post.substring(1,2)=='-'){
+			post=post.substring(2);
+			}
+			//console.log(link);
+			allwords+=post+" ";	
+		}
+		}
+console.log(allwords);
+
+stopwords = new Set("1,2,3,4,5,6,7,8,9,i,me,my,myself,we,us,our,ours,ourselves,you,your,yours,yourself,yourselves,he,him,his,himself,she,her,hers,herself,it,its,itself,they,them,their,theirs,themselves,what,which,who,whom,whose,this,that,these,those,am,is,are,was,were,be,been,being,have,has,had,having,do,does,did,doing,will,would,should,can,could,ought,i'm,you're,he's,she's,it's,we're,they're,i've,you've,we've,they've,i'd,you'd,he'd,she'd,we'd,they'd,i'll,you'll,he'll,she'll,we'll,they'll,isn't,aren't,wasn't,weren't,hasn't,haven't,hadn't,doesn't,don't,didn't,won't,wouldn't,shan't,shouldn't,can't,cannot,couldn't,mustn't,let's,that's,who's,what's,here's,there's,when's,where's,why's,how's,a,an,the,and,but,if,or,because,as,until,while,of,at,by,for,with,about,against,between,into,through,during,before,after,above,below,to,from,up,upon,down,in,out,on,off,over,under,again,further,then,once,here,there,when,where,why,how,all,any,both,each,few,more,most,other,some,such,no,nor,not,only,own,same,so,than,too,very,say,says,said,shall".split(","))
+
+words = allwords.split(/[\s.]+/g)
+//words = allwords.replace(/[^\w\s]|_/g,"").replace(/\s+/g," ");
+  .map(w => w.replace(/^[“‘"\-—()\[\]{}]+/g, ""))
+  .map(w => w.replace(/[;:.!?()\[\]{},"'’”\-—]+$/g, ""))
+  .map(w => w.replace(/['’]s$/g, ""))
+  .map(w => w.substring(0, 30))
+  .map(w => w.toLowerCase())
+  .filter(w => w && !stopwords.has(w));
+
+words.filter(w => /\W/.test(w))
+		words=words+'';
+
+function wordFrequency(txt){
+  var wordArray = txt.split(/[ .?!,*'"]/);
+  var newArray = [], wordObj;
+  wordArray.forEach(function (word) {
+    wordObj = newArray.filter(function (w){
+      return w.text == word;
+    });
+    if (wordObj.length) {
+      wordObj[0].size += 1;
+    } else {
+      newArray.push({text: word, size: 1});
+    }
+  });
+  return newArray;
+}
+var words=wordFrequency(words);
+//console.log(JSON.stringify(wordFrequency(words).sort(function(a,b){return a.size<b.size})).split("},").join("}"));
+
+console.log(words);
+		
+var words = words.filter(function (el) {
+  return el.size > 1;
+});
+
+function compare( a, b ) {
+  if ( a.size < b.size ){
+    return 1;
+  }
+  if ( a.size > b.size ){
+    return -1;
+  }
+  return 0;
+}
+
+words.sort( compare );
+if(words.length>10) words=words.slice(0,10);
+
+var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+console.log(words);
+
+var maxSize = d3.max(words, function (d) {return d.size;});
+var minFont = d3.min(words, function (d) {return d.size;});
+maxFont=maxSize;
+console.log(maxFont);
+console.log(minFont);
+var fontSizeScale = d3.scalePow().exponent(5).domain([0,1]).range([ minFont, maxFont]);
+
+console.log(fontSizeScale);
+//var layout = d3.layout.cloud()
+//    .size([400, 300])
+//    .words(words)
+//    .on("end", draw)
+//    .start();
+
+function zoomToFitBounds(width,height) {
+
+var cloud=d3.select("#demo1");
+      var X0 = d3.min( words, function (d) {
+        return d.x - (d.width/2);
+      }),
+        X1 = d3.max( words, function (d) {
+          return d.x + (d.width/2);
+        });
+
+      var Y0 = d3.min( words, function (d) {
+          return d.y - (d.height/2);
+        }),
+        Y1 = d3.max( words, function (d) {
+          return d.y + (d.height/2);
+        });
+
+      var scaleX = (X1 - X0) / (width);
+      var scaleY = (Y1 - Y0) / (height);
+
+      var scale = 1 / Math.max(scaleX, scaleY);
+
+      var translateX = Math.abs(X0) * scale;
+      var translateY = Math.abs(Y0) * scale;
+
+   //   cloud.attr("transform", "translate(" +
+   //     translateX + "," + translateY + ")" +
+   //     " scale(" + scale + ")");
+}
+
+var layout = d3.layout.cloud()
+    .size([200, 200])
+    .words(words)
+    .padding(5)
+    .rotate(function() { return ~~(Math.random() * 2) * 90; })
+    .font("Impact")
+    .fontSize(function(d) { return fontSizeScale(d.size/maxSize); })
+    .on("end", draw);
+
+layout.start();
+
+
+
+
+function draw(words) {
+	var width=layout.size()[0];
+	var height=layout.size()[1];
+  d3.select("#demo1")
+      .attr("width", layout.size()[0])
+      .attr("height", layout.size()[1])
+    .append("g")
+      .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
+    .selectAll("text")
+      .data(words)
+    .enter().append("text")
+      .style("font-size", function(d) { return d.size; })
+      .style("font-family", "Impact")
+	.style("fill", function(d) {
+            return color(i);
+        })
+      .attr("text-anchor", "middle")
+      .attr("transform", function(d) {
+        return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+      })
+      .text(function(d) { return d.text; });
+
+//zoomToFitBounds(width,height);	
+}
+
+
+
+callback(words);
+//});
+});
+});
+
+}
+
+
 function showAllData(course_id,topic_id,callback){
 	$("#d").hide();
 	$("#highlights").empty();
@@ -133,7 +305,8 @@ function showAllData(course_id,topic_id,callback){
 	$("#db").show();
 	//	$("#c").empty();
 //	$("#d").empty();
-	
+
+
 	var alldata={};
 	var d={};
 	getNodes(course_id,topic_id,function(output){
@@ -669,10 +842,13 @@ var clustering = jsnx.clustering(G);
 between=betweenness._numberValues;
 clust=clustering._numberValues;
 
+//console.log(clust);
+
 var maxb=0;
 var userb;
 var user_nameb;
 for(b in between){
+	if(b==topic_id) continue;
 	if(between[b]>=maxb) {
 		maxb=between[b];
 		userb=b;
@@ -680,8 +856,8 @@ for(b in between){
 }
 
 for(n in nodes){
-	console.log(nodes[n].user_id);
-	console.log(userb);
+	//console.log(nodes[n].user_id);
+	//console.log(userb);
 	if(nodes[n].user_id==userb) user_nameb=nodes[n].name;
 }
 
@@ -689,6 +865,7 @@ var maxc=0;
 var userc;
 var user_namec;
 for(c in clust){
+	if(c==topic_id) continue;
 	if(clust[c]>=maxc) {
 		maxc=clust[c];
 		userc=c;
@@ -696,18 +873,21 @@ for(c in clust){
 }
 
 for(n in nodes){
-	console.log(nodes[n].user_id);
-	console.log(userb);
+//	console.log(nodes[n].user_id);
+//	console.log(userb);
 	if(nodes[n].user_id==userc) user_namec=nodes[n].name;
 }
 
-
+var degree=degreeCent(graph);
 var degout=degreeCentOut(graph);
+
+//console.log(degree);
 
 var maxd=0;
 var userd;
 var user_named;
 for(d in degout){
+	if(d==topic_id) continue;
 	if(degout[d]>=maxd) {
 		maxd=degout[d];
 		userd=d;
@@ -715,66 +895,358 @@ for(d in degout){
 }
 
 for(n in nodes){
-	console.log(nodes[n].user_id);
-	console.log(userb);
+//	console.log(nodes[n].user_id);
+//	console.log(userb);
 	if(nodes[n].user_id==userd) user_named=nodes[n].name;
 }
 
 
-var db="<div id=\"highlights\">";
-db+="<h4>Discussion Board Highlights</h4>";
-db+="<p>Total Participants: &nbsp; "+nodes.length;
+
+function show_time_series(){
+function zip() {
+    var args = [].slice.call(arguments);
+    var longest = args.reduce(function(a,b){
+        return a.length>b.length ? a : b
+    }, []);
+
+    return longest.map(function(_,i){
+        return args.map(function(array){return array[i]})
+    });
+}
+   // console.log( "Document loaded." );
+	
+//	$('#mean').text('999');
+//	$('#variance').text('999');
+getDiscussionTopic(course_id,topic_id,function(to){
+	getLinks(course_id,topic_id,function(ent){
+		to=to.discussions_topic;
+		var start_date=new Date(to.created_at.substring(0,10));
+		var last_date=new Date(to.last_reply_at.substring(0,10));  
+		console.log(start_date);
+		console.log(last_date);  
+		var pdates=[];
+		if(ent){
+	for(e=0;e<ent.length;e++){
+		var d=ent[e].date;
+		d=new Date(d.substring(0,10));
+		console.log(d);
+		if(d) pdates.push(d);
+	}
+		}
+
+pdates.sort(function(a,b){
+
+return a-b;
+});
+
+		
+
+console.log(pdates);
+	
+// Returns an array of dates between the two dates
+var getDates = function(startDate, endDate) {
+  var dates = [],
+      currentDate = startDate,
+      addDays = function(days) {
+        var date = new Date(this.valueOf());
+        date.setDate(date.getDate() + days);
+        return date;
+      };
+  while (currentDate <= endDate) {
+    dates.push(currentDate);
+    currentDate = addDays.call(currentDate, 7);
+  }
+  return dates;
+};
+
+// Usage
+var dates = getDates(start_date, last_date);                                                                                                           
+dates.forEach(function(date) {
+  console.log(date);
+});		
+
+//getDates(start_date,last_date);
+
+var data=[];
+var count=0;
+for(i=0;i<dates.length;i++){
+	count=0;
+//	var from=dates[i];
+//	var to=dates[i+1];
+	for(j=0;j<pdates.length;j++){
+		if(pdates[j]>=dates[i]  && pdates[j]<dates[i+1]){ 
+			count++;
+			console.log("week "+i+" "+pdates[j]);
+		}
+	}
+	data.push(count); 
+}
+
+console.log(data);
+
+//	var data = [183.1, 183.9, 163.1, 179.5, 181.4,
+//				173.4, 167.6, 177.4, 171.7, 170.1,
+//				163.7, 151.9, 145.4, 145.0, 138.9];
+//	var time = [1917, 1918, 1919, 1920, 1921,
+//				1922, 1923, 1924, 1925, 1926,
+//				1927, 1928, 1929, 1930, 1931];
+var time=[];
+for(i=0;i<dates.length;i++){
+ time[i]=i+1; }
+var ts = tstModule.timeseries.Timeseries(data, time);
+	var ts_plot = ts.toPlot();
+	var tslog_plot = ts.log().toPlot();
+	
+	var lsq = tstModule.statistics.least_squares_fit(time, data);
+console.log(lsq);
+	var lsq_line = [];
+	lsq_line.push([1, 1*lsq[1] + lsq[0]]);
+	lsq_line.push([dates.length, dates.length*lsq[1] + lsq[0]]);
+	console.log(lsq_line);
+	
+	var plot_data = zip(time, data);
+	
+	var diff_data = diff(data);
+	var plot_diff_data = zip(time, diff_data);
+	
+	var sma_data = tstModule.filtering.simple_moving_average(data, 1);
+	var plot_sma_data = zip(time, sma_data);
+
+	var mean = tstModule.statistics.avg(data);
+	var v = tstModule.statistics.variance(data);
+	var skew = tstModule.statistics.skewness(data);
+
+$.plot($("#placeholder"), [ts_plot], {});
+
+console.log("Mean: "+mean);
+console.log("Variance: "+v);
+console.log("Skewness: "+skew);
+
+//	$('#mean').text("mean= " + mean);
+//	$('#variance').text("variance= " + v);
+//	$('#skew').text("skew= " + skew);
+});
+});
+}
+
+show_time_series();
+
+getAllWords(course_id,topic_id,function(w){
+console.log(w);
+
+  var mean = tstModule.statistics.avg([10, 7.7, 14.5]); //=> 10.733333
+console.log(mean);
+
+//});
+var top_words="";
+
+	if(w.length>3) { var top=w.slice(0,3); console.log(top); } else {top=w;}
+for(t in top){
+	top_words+=top[t].text+", ";
+}
+
+top_words=top_words.substring(0,top_words.length-1);
+
+console.log(top_words);
+var dbh="<div id=\"highlights\">";
+dbh+="<h4>Discussion Board Highlights</h4>";
+$("#db1").append(dbh);
+//db+="<svg id=\"demo1\" width=\"400\" height=\"300\"></svg>";
+var db="<p>Total Participants: &nbsp; "+nodes.length;
 db+="<p>Total Interactions: &nbsp; "+links.length;
+db+="<p>Top 3 terms: "+top_words;
 db+="<p>Top Contributor: &nbsp;"+user_named;
 db+="<p>Top Facilitator: &nbsp;"+user_nameb;
 db+="<p>Potential Top Friend:"+user_namec;
 db+="<p>Potential Team Leader(s): &nbsp;"
-console.log(links);
+//console.log(links);
 jsnx.genFindCliques(G).then(function(cliques) {
-  console.log(cliques);
+//  console.log(cliques);
 });
 
 //$.each(cliques)
 //db+=
 
+var community = jLouvain()
+    .nodes(node_data)
+    .edges(edge_data);
 
+//  var result  = community();
 
+//console.log(result);
 
 
 var largestClq=jsnx.graphCliqueNumber(G);
-console.log(largestClq);
+//console.log(largestClq);
 
-db+="<p>Size of largest group: &nbsp; "+largestClq+"<br>";
+db+="<p>Size of largest group: &nbsp; "+largestClq+"</p><br>";
 
 //Return a list of nodes connected to node n.
-var neighbors=jsnx.neighbors(G,node_data[1]);
-console.log(neighbors);
+//var neighbors=jsnx.neighbors(G,node_data[1]);
+//console.log(neighbors);
 
 
+var original_node_data = node_data;
 
-db+="<button class=\"btn-report\" name=\"btn-report\">Download Report</button>";
+    var community_assignment_result = community();
+    var node_ids = Object.keys(community_assignment_result);
+//console.log(node_ids);
+    console.log('Resulting Community Data', community_assignment_result);
+console.log("Maximum community number: ");
+    var max_community_number = 0;
+    node_ids.forEach(function (d) {
+    //  node_data[d].community = community_assignment_result[d];
+      max_community_number = max_community_number < community_assignment_result[d] ?
+        community_assignment_result[d] : max_community_number;
+    });
 
-//var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(output));
-//var dlAnchorElem = document.getElementById('downloadAnchorElem');
-//dlAnchorElem.setAttribute("href",     dataStr     );
-//dlAnchorElem.setAttribute("download", "data.json");
-//dlAnchorElem.click();
+   // console.log(max_community_number);
+
+function strip(html){
+   var doc = new DOMParser().parseFromString(html, 'text/html');
+   return doc.body.textContent || "";
+}
 
 
-
-
-
-
+db+="<button class=\"btn-report\" id=\"report\" name=\"btn-report\">Download Report</button>";
 
 db+="</div>";
 
-$("#db").append(db);
-console.log(db);
+$("#db3").append(db);
+// To retrieve the partition
+//const comt = louvain(G);
+//console.log(comt);
+
+var llp=jLayeredLabelPropagation(node_data,edge_data);
+//console.log("Label propagation results: ");
+//console.log(llp);
+
+
+var triangles=jsnx.triangles(G);
+//console.log("Triangle counts: ");
+var tri=triangles._numberValues;
+//console.log(tri);
+nodes.sort(function(a, b) {
+    return a.user_id - b.user_id;
+});
+
+//var nodes=nodes.filter(n => n.user_id!==topic_id);
+console.log(topic_id);
+console.log(nodes);
+
+var repdata=[];
+allwords="";
+	allp="";
+//var c;
+nodes.forEach(function (node){
+getUserEntries(course_id,topic_id,node.user_id,function(n){	
+	d=[];
+if(n.posts){	
+	p=n.posts;}
+
+
+//	console.log(p);
+
+	for(i=0;i<p.length;i++){
+		allp+=strip(p[i].post);
+	}
+
+//	console.log(between);
+	d[0]=node.user_id;
+	d[1]=node.name;
+	d[2]=n.posts.length;
+	for(deg in degree){
+		if(node.user_id==deg) d[3]=degree[deg]; }
+	for(b in between){
+		if(node.user_id==b) d[4]=between[b];}
+	for(c in clust){
+		if(node.user_id==c) d[5]=clust[c]; }
+	for(t in tri){
+		if(node.user_id==t) d[6]=tri[t]; }
+	repdata.push(d);
+//	for(i=0;i<p.length;i++){
+//		allwords+=strip(p[i].post)+ " ";
+		console.log(repdata);
+//	}
+
+	
+//console.log(vectors);
+//var root = figue.agglomerate(labels, vectors , figue.EUCLIDIAN_DISTANCE,figue.SINGLE_LINKAGE) ;
+
+//  var dendogram = root.buildDendogram (5, true, true, true, false) ;
+
+
+//console.log(root);
+//	console.log(dendogram);
+//});
+//});
+
+console.log(repdata);
+
+var labels = new Array ;
+  var vectors = new Array ;
+  for (var i = 0 ; i < repdata.length ; i++) {
+      labels[i] = repdata[i][0] ;
+      vectors[i] = [ repdata[i][3] , repdata[i][5]] ;
+  }
+	console.log(vectors);
+	console.log(repdata.length);
+if(repdata.length==2){ var clusters = figue.kmeans(2, vectors);}
+else if(repdata.length==3){ var clusters = figue.kmeans(3,vectors);}
+else {var clusters = figue.kmeans(4,vectors);}
+//	console.log(clusters.assignments.length);
+//	console.log(repdata.length);
+//	if(clusters.assignments){
+	for(i=0;i<repdata.length;i++) { 
+		console.log(clusters.assignments[i]);
+		console.log(repdata[i]);
+		if(clusters.assignments[i]==null) continue;
+		repdata[i][7]=clusters.assignments[i];
+		console.log(repdata);
+	}
+//}
 
 
 
 
 
+
+
+});
+});
+
+
+
+string_to_array = function (str) {
+     return str.trim().split(",");
+};
+//console.log(words);
+
+function download_csv() {
+//console.log(repdata);	
+    var csv = 'ID,Participant Name,Total Posts,Degree Centrality, Betweenness Centrality, Clustering Coefficient,Triangle Count,Cluster_Label\n';
+    repdata.forEach(function(row) {
+	    console.log(row);
+            csv += row.join(',');
+            csv += "\n";
+    });
+	 
+    console.log(csv);
+    var hiddenElement = document.createElement('a');
+    hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+    hiddenElement.target = '_blank';
+    hiddenElement.download = 'discussion_report.csv';
+    hiddenElement.click();
+}
+
+$('#report').on('click', function () {
+	download_csv();
+
+});
+
+//});
+//});
+});
 
   // add html content to tooltip
   function loadTooltipContent(node) {
@@ -784,7 +1256,7 @@ console.log(db);
 	  $(".tooltip").empty();
 	  uid=node.user_id;
 	  getUserEntries(course_id,topic_id,uid,function(output){
-		console.log(output);
+//		console.log(output);
      			var deg;
 			var degree=degreeCent(graph);
 //			console.log(degree);
@@ -806,8 +1278,7 @@ for (var d in degO){
 	if(node.user_id == d) deg=degO[d];
 }
 
-var neighbors=jsnx.neighbors(G,node.user_id);
-console.log(neighbors);
+
 
 
 function strip(html){
@@ -817,7 +1288,7 @@ function strip(html){
 
 
 allposts=output.posts;
-console.log(allposts);
+//console.log(allposts);
 var rcount=0,dcount=0,scount=0,ccount=0;
 for(p in allposts){
 	var post=strip(allposts[p].post);
@@ -836,31 +1307,12 @@ for(p in allposts){
 getUserRole(course_id,function(id){
 //console.log(id);
 
-		var htmlContent= "";
-
-
-		htmlContent += "<div id=\"container-main\">";
-      htmlContent += "<h4>" + output.name +"<\/h4>";
-if(id.type!="student"){
-//	$("#sna").empty();
-	$("#sna").append("<br><h4>"+output.name+"  Details</h4>"
-		+"<p>Interactions Frequency: "+deg
-		+"<p>Most Interacted with: "
-		+"<p>Replies Made: "+rcount
-		+"<p>Comments Made: "+ccount
-		+"<p>Discussions Made: "+dcount
-		+"<p>Solutions Made: "+scount
 	
-	
-	);
-
-}
-
 //});
 //      htmlContent += "<img width=10 height=10 src='"+output.image+"'><br>"
 var entries=[];
 getLinks(course_id,topic_id,function(n){
-	console.log(n);
+//	console.log(n);
 	getNodes(course_id,topic_id,function(x){
 	for(i=0;i<n.length;i++){
 		entry={};
@@ -883,6 +1335,44 @@ for(j=0;j<x.length;j++){
 	nn['name']=x[j].name;
 	nodeNames.push(nn);
 }
+var names="";
+var neighbors=jsnx.neighbors(G,node.user_id);
+//console.log(neighbors);
+for(i in neighbors){
+	//if(neighbors[i]==topic_id) continue;
+	if(neighbors[i]==uid) continue;
+	else{
+	for(n in nodeNames){
+		if(neighbors[i]==nodeNames[n].user_id) names+=nodeNames[n].name+", ";
+		}
+	}
+}
+names=names.substring(0,names.length-2);
+
+
+	var htmlContent= "";
+
+
+		htmlContent += "<div id=\"container-main\">";
+      htmlContent += "<h4>" + output.name +"<\/h4>";
+if(id.type!="student"){
+if(output.id!=topic_id){
+//	$("#sna").empty();
+	$("#sna").append("<br><h4>"+output.name+"  Details</h4>"
+		+"<p>Interactions Frequency: "+deg
+		+"<p>Interacted with: "+names
+		+"<p>Replies Made: "+rcount
+		+"<p>Comments Made: "+ccount
+		+"<p>Discussions Made: "+dcount
+		+"<p>Solutions Made: "+scount
+	
+	
+	);
+}
+}
+
+
+
 	posts=output.posts;
 if(posts){
 posts.forEach(pf);}
@@ -921,12 +1411,16 @@ htmlContent+="<div class=\"form-container-main\" id='container-post-"+index+"'>"
       htmlContent+="Posted to: "+name+"</br>"
 	htmlContent+="<div class=\"text_div\" id="+item.entry_id+">"
 
-
+var p=strip(item.post);
+if(p.substring(1,2)=='-'){
+p=p.substring(2);
+}
+//console.log(p);
 //console.log(strip(item.post));
 if(id.type!="student"){
-	htmlContent +="<br><span class=\"formText\" id=\"formText-"+index+"\">"+strip(item.post).substring(2)+"</span><input type=\"button\" class=\"edit-btn\" value=\"Edit\"></div><br>"  }
+	htmlContent +="<br><span class=\"formText\" id=\"formText-"+index+"\">"+p+"</span><input type=\"button\" class=\"edit-btn\" value=\"Edit\"></div><br>"  }
 else{
-	htmlContent+="<br><br><span class=\"formText\" id=\"formText-"+index+"\">"+strip(item.post).substring(2)+"</span></div><br>"
+	htmlContent+="<br><br><span class=\"formText\" id=\"formText-"+index+"\">"+p+"</span></div><br>"
 }
 htmlContent+="<div class=\"replace-edit-div\"></div>"
       htmlContent += "<input type=\"button\" class=\"reply-btn\" value=\"Reply\">"
@@ -1509,6 +2003,7 @@ function getLinks(course_id,topic_id,callback){
 		}
 		link['post']=edata[i].message;
 		link['post_id']=edata[i].id;
+		link['date']=edata[i].created_at;
 		var r =[];
 		if(edata[i].recent_replies){
 				r.push(edata[i].recent_replies);
@@ -1540,6 +2035,7 @@ function getLinks(course_id,topic_id,callback){
 				
 				rlink['post']=w[k].message;
 				rlink['post_id']=w[k].id;
+				rlink['date']=w[k].created_at;
 			}
 				}
 				}

@@ -25,6 +25,11 @@ padding:10px;
 #highlights h4{
 	padding:10px;
 text-align:center;
+
+}
+ button .btn-report{
+  text-align:center;
+ margin: 0 auto;
 }
 
 #db h4{
@@ -71,9 +76,11 @@ background-color: white;
   border: 2px solid #e7e7e7;
 }
 
+
+
 .menu-btn:hover {background-color: #e7e7e7;}
 
-.reply, .reply-btn, .discuss-btn, .solve-btn, .comment-btn, .edit-btn, .cancel, .edit{
+.btn-report, .reply, .reply-btn, .discuss-btn, .solve-btn, .comment-btn, .edit-btn, .cancel, .edit, .solve, .discuss, .comment{
   background-color: #4CAF50;
   border: none;
   color: white;
@@ -87,7 +94,7 @@ background-color: white;
   width:70px;
 }
 
-.edit, .reply, .cancel {
+.edit, .reply, .cancel, .discuss, .solve, .comment{
 background-color:#077995;
 }
 
@@ -98,7 +105,10 @@ width:40px;
 padding: 2px 3px;
 }
 
-
+.btn-report {
+width: 160px;
+text-align:center;
+}
 
 
 #info {
