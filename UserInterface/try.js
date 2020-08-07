@@ -14,7 +14,8 @@ function showDiscussions(course_id,callback){
 	$("#intro").empty();
 	$("#intro").append("<h3><i>Please select a discussion topic: </i></h3>");
 	getCourse(course_id,function(course){
-	$("#db1").append("<h4>Course Details</h4><p>Course Name: <i>"+course.course.name+"</i><p>Start Date: <i>"+course.course.start_at+"</i>");	
+		list=output.discussions_topics;
+	$("#db1").append("<h4>Course Details</h4><p>Course Name: <i>"+course.course.name+"</i><p>Start Date: <i>"+course.course.start_at+"</i><p>Number of Discussions: <i>"+list.length+"</i>");	
 	if(course.course.end_at) {
 		$("#db1").append("<p>"+course.course.end_at);
 	}
@@ -42,7 +43,6 @@ function getDiscussionsByCourseID(course_id,callback) {
 		headers: {"Content-Type": "application/json"},	
 		success: function (data) {
 			callback(data);
-//			console.log(data);
 		
 	}});
 }
@@ -65,7 +65,6 @@ function getAllCourses(callback) {
                 method: "get",
                 headers: {"Content-Type": "application/json"},
                 success: function (data) {
-		//	console.log(data);
       			callback(data);
 		}});
 }
@@ -84,7 +83,7 @@ function getAuth(callback) {
 
 function showAllCourses(callback){
 	getAuth(function (data){
-	$("#greet").html("<h2>Welcome, "+data.events.linked.users[0].name+"!</h2>");
+	$("#greet").html("<h2>Welcome!!</h2>");
 		$("#db1").html("<h4>About This Tool</h4><p><i>This user interface is a  graphical representation of Canvas LMS discussion board based on a schema with a goal to make discussion boards more structured. <br>This is a Web 2.0 tool created mainly with the help of PHP, Javascript, Ajax, jQuery and D3.js where all the data is manipulated using Canvas LMS REST API.<br><p>Author: Hemraj Ojha</i>");
 		$("#intro").html("<h3><i>Please select a course to begin:</i></h3>");
 	$("#c_name").append("<a href=\"index.html\" id=\"home link\">Home</a>");	
@@ -130,6 +129,7 @@ function strip(html){
 }
 
 function getAllWords(course_id,topic_id,callback){
+	$("#db2").show();
 var allwords="";
 getDiscussionTopic(course_id,topic_id,function(topic){
 	if(topic.discussions_topic)
@@ -296,7 +296,7 @@ function draw(words) {
 //	zoomToFitBounds(width,height);	
 }
 
-
+$("#wc_label").append("<h4><i>Discussion Board Wordcloud</i></h4><br>");
 //callback(words);
 //});
 });
@@ -311,6 +311,13 @@ function showAllData(course_id,topic_id,callback){
 	$("#greet").empty();
 	$("#intro").empty();
 	$("#db1").empty();
+	$("#demo1").empty();
+	$("#db3").empty();
+	$("#wc_label").empty();
+	$("#leaderboard").empty();
+	$("#ts_label").empty();
+	$("#placeholder").empty();
+
 //	$("#wc_title").empty();
 //	$("#ts_title").empty();
 	$("#db1").show();
@@ -939,9 +946,10 @@ for(d in degree){
 }
 
 console.log(avg);
-var max_v=avg[0].value;
-var max_id=avg[0].id;
-for(i=1;i<avg.length;i++){
+var max_v=0;
+var max_id=0;
+for(i=0;i<avg.length;i++){
+	if(avg[i].id==topic_id) continue;
 	if(avg[i].value>=max_v) {
 		max_v=avg[i].value;	
 		max_id=avg[i].id;
@@ -1083,10 +1091,14 @@ var ts = tstModule.timeseries.Timeseries(data, time);
 	var v = tstModule.statistics.variance(data);
 	var skew = tstModule.statistics.skewness(data);
 
+	var mx = tstModule.statistics.max(data);
+	var mn = tstModule.statistics.min(data);
+
 $.plot($("#placeholder"), [ts_plot], {});
-console.log("Mean: "+mean);
-console.log("Variance: "+v);
-console.log("Skewness: "+skew);
+$("#ts_label").append("<br><br><h4><i>Temporal Graph(Weeks(X-Axis) vs Posts(Y-Axis))</i></h4><p>Average posts per week: &nbsp;"+(Math.round(mean * 100) / 100).toFixed(2)+", &nbsp; Maximum posts in any week: &nbsp;"+mx+", &nbsp; Minimum posts in any week: &nbsp;"+mn);
+//console.log("Mean: "+mean);
+//console.log("Variance: "+v);
+//console.log("Skewness: "+skew);
 
 //	$('#mean').text("mean= " + mean);
 //	$('#variance').text("variance= " + v);
@@ -1117,16 +1129,17 @@ top_words=top_words.substring(0,top_words.length-2);
 
 console.log(top_words);
 var dbh="<div id=\"highlights\">";
-dbh+="<h4>Discussion Board Highlights</h4>";
+dbh+="<h3>Discussion Board Highlights</h3>";
 $("#db1").append(dbh);
-//db+="<svg id=\"demo1\" width=\"400\" height=\"300\"></svg>";
+
+$("#leaderboard").append("<h4><i>Current Leaderboard</i></h4>");
 var db="<p>Total Participants: &nbsp; "+nodes.length;
 db+="<p>Total Interactions: &nbsp; "+links.length;
-db+="<p>Top term(s): &nbsp;"+top_words;
-db+="<p>Top Contributor: &nbsp;"+user_named;
-db+="<p>Top Facilitator: &nbsp;"+user_nameb;
-db+="<p>Potential Top Friend: &nbsp;"+user_namec;
-db+="<p>Potential Team Leader(s): &nbsp;"+user_name_max;
+db+="<p id=\"terms\">Top term(s): &nbsp;"+top_words;
+db+="<p id=\"contributor\">Top Contributor: &nbsp;"+user_named;
+db+="<p id=\"facilitator\">Top Facilitator: &nbsp;"+user_nameb;
+db+="<p id=\"friend\">Potential Top Friend: &nbsp;"+user_namec;
+db+="<p id=\"leader\">Potential Team Leader(s): &nbsp;"+user_name_max;
 //console.log(links);
 jsnx.genFindCliques(G).then(function(cliques) {
 //  console.log(cliques);
@@ -1147,7 +1160,7 @@ var community = jLouvain()
 var largestClq=jsnx.graphCliqueNumber(G);
 //console.log(largestClq);
 
-db+="<p>Size of largest group: &nbsp; "+largestClq+"</p><br>";
+db+="<p id=\"lgroup\">Size of largest group: &nbsp; "+largestClq+"</p>";
 
 //Return a list of nodes connected to node n.
 //var neighbors=jsnx.neighbors(G,node_data[1]);
@@ -1176,7 +1189,7 @@ function strip(html){
 }
 
 
-db+="<button class=\"btn-report\" id=\"report\" name=\"btn-report\">Download Report</button>";
+db+="<button class=\"btn-report\" id=\"report\" name=\"btn-report\">Download Report</button><br>";
 
 db+="</div>";
 
@@ -1184,6 +1197,15 @@ $("#db3").append(db);
 // To retrieve the partition
 //const comt = louvain(G);
 //console.log(comt);
+
+ $("#db3").append("<span id=\"tooltip_lb\"><p>Top Term(s): 3 most frequently used terms"+
+  "<p>Top Contributor: user with highest out-degree centrality"+
+  "<p>Top Facilitator: user with highest betweenness centrality"+
+  "<p>Potential Top Friend:  user with highest clustering coefficient"+
+  "<p>Potential Team Leader(s): user with highest average centralities"+
+  "<p>Size of largest group: size of largest clique in the discussion</span>");
+
+
 
 var llp=jLayeredLabelPropagation(node_data,edge_data);
 //console.log("Label propagation results: ");
@@ -1357,14 +1379,14 @@ function strip(html){
 
 allposts=output.posts;
 //console.log(allposts);
-var rcount=0,dcount=0,scount=0,ccount=0;
+var rcount=0,dcount=0,scount=0,qcount=0;
 for(p in allposts){
 	var post=strip(allposts[p].post);
 //	console.log(post.substring(0,1));
 	if(post.substring(0,1)=='r') rcount++;
 	if(post.substring(0,1)=='s') scount++;
 	if(post.substring(0,1)=='d') dcount++;
-	if(post.substring(0,1)=='c') ccount++;
+	if(post.substring(0,1)=='q') qcount++;
 
 }
 
@@ -1430,9 +1452,9 @@ if(output.id!=topic_id){
 		+"<p>Interactions Frequency: "+deg
 		+"<p>Interacted with: "+names
 		+"<p>Replies Made: "+rcount
-		+"<p>Comments Made: "+ccount
+		+"<p>Questions Asked: "+qcount
 		+"<p>Discussions Made: "+dcount
-		+"<p>Solutions Made: "+scount
+		+"<p>Solutions Provided: "+scount
 	
 	
 	);
@@ -1492,7 +1514,7 @@ else{
 }
 htmlContent+="<div class=\"replace-edit-div\"></div>"
       htmlContent += "<input type=\"button\" class=\"reply-btn\" value=\"Reply\">"
-      htmlContent += "<input type=\"button\" class=\"comment-btn\" value=\"Comment\">"	
+      htmlContent += "<input type=\"button\" class=\"question-btn\" value=\"Question\">"	
       htmlContent += "<input type=\"button\" class=\"discuss-btn\" value=\"Discuss\">"
       htmlContent += "<input type=\"button\" class=\"solve-btn\" value=\"Solve\">"	
 
@@ -1522,7 +1544,7 @@ htmlContent+="<div class=\"replace-edit-div\"></div>"
 			var htmlE= "";
 			htmlE+="";
       htmlE += "<div class=\"edit-form-container\"><form id=\"editForm-"+parent_id+"\" class=\"editForm\" method=\"put\">"
-	htmlE +="<textarea id=\"editText-"+parent_id+"\" class=\"editText\" cols=\"37\" rows =\"4\" name=\"editText\">"+text+"</textarea><br>"     
+	htmlE +="<textarea id=\"editText-"+parent_id+"\" class=\"editText\" cols=\"32\" rows =\"4\" name=\"editText\">"+text+"</textarea><br>"     
 //	htmlContent+="Degree: "+deg
       htmlE += "<input type=\"submit\" class=\"edit\" value=\"Edit\">"
       htmlE+="<input type=\"button\" class=\"cancel\" value=\"Cancel\">"
@@ -1581,7 +1603,7 @@ $('.cancel').click(function() {
 //      htmlContent += "<h4>" + output.name +"  "+"<img width=20 height=20 src='"+output.image+"'><\/h4>";
 
       htmlC += "<form id=\"replyForm\" method=\"post\">"
-	htmlC +="<textarea id=\"postText\" class=\"text\" cols=\"40\" rows =\"4\" name=\"postText\"></textarea><br>"     
+	htmlC +="<textarea id=\"postText\" class=\"text\" cols=\"32\" rows =\"4\" name=\"postText\"></textarea><br>"     
 //	htmlContent+="Degree: "+deg
       htmlC += "<input type=\"submit\" class=\"reply\" value=\"Reply\">"
       htmlC+="<input type=\"button\" class=\"cancel\" value=\"Cancel\">"
@@ -1633,7 +1655,7 @@ $('.cancel').click(function() {
 
 	});
 
-		$(".comment-btn").on('click',function(){
+		$(".question-btn").on('click',function(){
 			//var text=$(this).attr("value");
 			//(this).form
 			
@@ -1643,10 +1665,10 @@ $('.cancel').click(function() {
 		htmlC += "<div>";
 //      htmlContent += "<h4>" + output.name +"  "+"<img width=20 height=20 src='"+output.image+"'><\/h4>";
 
-      htmlC += "<form id=\"commentForm\" method=\"post\">"
-	htmlC +="<textarea id=\"postText\" class=\"text\" cols=\"40\" rows =\"4\" name=\"postText\"></textarea><br>"     
+      htmlC += "<form id=\"questionForm\" method=\"post\">"
+	htmlC +="<textarea id=\"postText\" class=\"text\" cols=\"32\" rows =\"4\" name=\"postText\"></textarea><br>"     
 //	htmlContent+="Degree: "+deg
-      htmlC += "<input type=\"submit\" class=\"comment\" value=\"Comment\">"
+      htmlC += "<input type=\"submit\" class=\"question\" value=\"Question\">"
       htmlC+="<input type=\"button\" class=\"cancel\" value=\"Cancel\">"
       htmlC += "<\/form>"
    
@@ -1655,9 +1677,9 @@ $('.cancel').click(function() {
    //   tooltip.html(htmlContent);
 
 		
-$('#commentForm').submit(function(e) {
+$('#questionForm').submit(function(e) {
 	e.preventDefault();
-    var $inputs = $('#commentForm :input');
+    var $inputs = $('#questionForm :input');
     var values = {};
     $inputs.each(function() {
         values[this.name] = $(this).val();
@@ -1667,12 +1689,12 @@ $('#commentForm').submit(function(e) {
 		names[this.value]=$(this).val();
 	});
 var reply=values['postText'];
-var new_comment='c-'+reply;
-var rel_type=names['Comment'];
+var new_question='q-'+reply;
+var rel_type=names['Question'];
 console.log(rel_type);
 var entry_id=$(".text_div").attr('id');
 	if(entry_id==topic_id){
-	createDiscussionTopicEntry(course_id,topic_id,new_comment);
+	createDiscussionTopicEntry(course_id,topic_id,new_question);
 		$(this).parent().hide();
 	$(".tooltip").hide();
 		$("#graph").empty();
@@ -1680,7 +1702,7 @@ var entry_id=$(".text_div").attr('id');
 		showAllData(course_id,topic_id,callback);
 	}		
 	else{
-	createDiscussionEntryReply(course_id,topic_id,entry_id,new_comment);
+	createDiscussionEntryReply(course_id,topic_id,entry_id,new_question);
 		$(this).parent().hide();
 		$(".tooltip").hide();
 		$("#graph").empty();
@@ -1708,7 +1730,7 @@ $('.cancel').click(function() {
 //      htmlContent += "<h4>" + output.name +"  "+"<img width=20 height=20 src='"+output.image+"'><\/h4>";
 
       htmlC += "<form id=\"discussForm\" method=\"post\">"
-	htmlC +="<textarea id=\"postText\" class=\"text\" cols=\"40\" rows =\"4\" name=\"postText\"></textarea><br>"     
+	htmlC +="<textarea id=\"postText\" class=\"text\" cols=\"32\" rows =\"4\" name=\"postText\"></textarea><br>"     
 //	htmlContent+="Degree: "+deg
       htmlC += "<input type=\"submit\" class=\"discuss\" value=\"Discuss\">"
       htmlC+="<input type=\"button\" class=\"cancel\" value=\"Cancel\">"
@@ -1773,7 +1795,7 @@ $('.cancel').click(function() {
 //      htmlContent += "<h4>" + output.name +"  "+"<img width=20 height=20 src='"+output.image+"'><\/h4>";
 
       htmlC += "<form id=\"solveForm\" method=\"post\">"
-	htmlC +="<textarea id=\"postText\" class=\"text\" cols=\"40\" rows =\"4\" name=\"postText\"></textarea><br>"     
+	htmlC +="<textarea id=\"postText\" class=\"text\" cols=\"32\" rows =\"4\" name=\"postText\"></textarea><br>"     
 //	htmlContent+="Degree: "+deg
       htmlC += "<input type=\"submit\" class=\"solve\" value=\"Solve\">"
       htmlC+="<input type=\"button\" class=\"cancel\" value=\"Cancel\">"
@@ -1967,7 +1989,6 @@ function getDiscussionEntryReplies(course_id,topic_id,entry_id,callback) {
         });
 }
 
-//not working
 function createDiscussionEntryReply(course_id,topic_id,entry_id,message) {
         $.ajax({
                 url: apiUrl+'courses/'+course_id+'/discussion_topics/'+topic_id+'/entries/'+entry_id+'/replies',
