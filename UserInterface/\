@@ -1,0 +1,198 @@
+$(document).ready(function () {
+
+		id= 119626;
+		topic_id = 755771;
+		entry_id = 3197834;
+		title="new reply";
+		message='"discussion reply"';
+		rating = 1;
+	$("#msg").click(function(){
+	//		createDiscussion(id,title,message);
+	//	getDiscussionTopic(id,topic_id);
+	//	updateDiscussion(id,topic_id,title,message);
+	//	getDiscussionsByCourseID(id);
+	//	getAllCourses();	
+	//	getCourse(id);
+	//	getAllTopicEntries(id,topic_id);
+		createDiscussionTopicEntry(id,topic_id,message);	
+	//	updateDiscussionTopicEntries(id,topic_id,entry_id,message);
+	//	deleteDiscussionTopicEntries(id,topic_id,entry_id);
+	//	getDiscussionEntryReplies(id,topic_id,entry_id);
+	//	createDiscussionEntryReplies(id,topic_id,entry_id,message);
+	//	rateEntry(id,topic_id,entry_id,rating);
+	});
+
+});
+
+const apiUrl = "https://ceclnx01.csi.miamioh.edu/~ojhah/cse451-ojhah-web/schema_model/UserInterface/canvasRestServer.php/api/v1/";
+
+function getDiscussionsByCourseID(course_id) {	
+	$.ajax({
+		url: apiUrl+'courses/'+course_id+'/discussion_topics',
+		method: "get",	
+		headers: {"Content-Type": "application/json"},	
+		success: function (data) {
+		console.log(data);
+	}});
+}
+
+
+function getDiscussionTopic(course_id,topic_id) {
+        $.ajax({
+                url: apiUrl+'courses/'+course_id+'/discussion_topics/'+topic_id,
+                method: "get",
+                headers: {"Content-Type": "application/json"},
+                success: function (data) {
+                console.log(data);
+        }});
+}
+
+function getAllCourses() {
+	$.ajax({
+                url: apiUrl+'courses',
+                method: "get",
+                headers: {"Content-Type": "application/json"},
+                success: function (data) {
+                console.log(data);
+        }});
+}
+
+function getCourse(course_id) {
+	$.ajax({
+                url: apiUrl+'/courses/'+course_id,
+                method: "get",
+                headers: {"Content-Type": "application/json"},
+                success: function (data) {
+                console.log(data);
+        }});
+}
+
+function getAllTopicEntries(course_id,topic_id) {
+        $.ajax({
+                url: apiUrl+'courses/'+course_id+'/discussion_topics/'+topic_id+"/entries",
+                method: "get",
+                headers: {"Content-Type": "application/json"},
+                success: function (data) {
+                console.log(data);
+        }});
+}
+
+function createDiscussion(course_id,title,message) {
+        $.ajax({
+                url: apiUrl+'courses/'+course_id+'/discussion_topics',
+                method: "post",
+                headers: {"Content-Type": "application/json"},
+                data: JSON.stringify({title: title, message: message}),
+                dataType: 'json',
+                success: function (data) {
+                        console.log(data);
+                },
+                error: function(error){
+                        console.log("Error on ajax fetch");
+        }});
+}
+
+function updateDiscussion(course_id,topic_id,title,message) {
+        $.ajax({
+                url: apiUrl+'courses/'+course_id+'/discussion_topics/'+topic_id,
+                method: "put",
+                headers: {"Content-Type": "application/json"},
+                data: JSON.stringify({title: title, message: message}),
+                dataType: 'json',
+                success: function (data) {
+                        console.log(data);
+                },
+                error: function(error){
+                        console.log("Error on ajax fetch");
+        }});
+}
+
+//not working properly
+function createDiscussionTopicEntry(course_id,topic_id,message) {
+        $.ajax({
+                url: apiUrl+'courses/'+course_id+'/discussion_topics/'+topic_id+'/entries',
+                method: 'POST',
+                headers: {"Content-Type": "application/json"},
+                data: JSON.stringify({message: message}),
+                dataType: 'json',
+                success: function (data,textStatus,xhr) {
+		//	JSON.parse(data);
+                        console.log(data);
+			callback();
+		 },
+                error: function(jqXHR,error,errorThrown){
+                       console.log(errorThrown);
+        }});
+}
+
+function updateDiscussionTopicEntries(course_id,topic_id,entry_id,message) {
+        $.ajax({
+                url: apiUrl+'courses/'+course_id+'/discussion_topics/'+topic_id+'/entries/'+entry_id,
+                method: "put",
+                headers: {"Content-Type": "application/json"},
+                data: JSON.stringify({message: message}),
+                dataType: 'json',
+                success: function (data) {
+                        console.log(data);
+                },
+                error: function(error){
+                        console.log("Error on ajax fetch");
+        }});
+}
+
+//not working properly
+function deleteDiscussionTopicEntries(course_id,topic_id,entry_id) {
+        $.ajax({
+                url: apiUrl+'courses/'+course_id+'/discussion_topics/'+topic_id+'/entries/'+entry_id,
+                method: "delete",
+                headers: {"Content-Type": "application/json"},
+                success: function (data) {
+                        console.log(data);
+                },
+                error: function(error){
+                        console.log("Error on ajax fetch");
+        }});
+}
+
+function getDiscussionEntryReplies(course_id,topic_id,entry_id) {
+        $.ajax({
+                url: apiUrl+'courses/'+course_id+'/discussion_topics/'+topic_id+"/entries/"+entry_id+'/replies',
+                method: "get",
+                headers: {"Content-Type": "application/json"},
+                success: function (data) {
+                console.log(data);
+        }});
+}
+
+//not working
+function createDiscussionEntryReplies(course_id,topic_id,entry_id,message) {
+        $.ajax({
+                url: apiUrl+'courses/'+course_id+'/discussion_topics/'+topic_id+'/entries/'+entry_id+'/replies',
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                data: JSON.stringify({message: message}),
+                dataType: 'json',
+                success: function (data) {
+                        console.log(data);
+                },
+                error: function(error){
+                        console.log("Error on ajax fetch");
+			//console.log(error);
+        }});
+}
+
+//not working
+function rateEntry(course_id,topic_id,entry_id,rating) {
+        $.ajax({
+                url: apiUrl+'courses/'+course_id+'/discussion_topics/'+topic_id+'/entries/'+entry_id+'/rating',
+                method: "post",
+                headers: {"Content-Type": "application/json"},
+                data: JSON.stringify({rating: rating}),
+                dataType: 'json',
+                success: function (data) {
+                        console.log(data);
+                },
+                error: function(error){
+                        console.log("Error on ajax fetch");
+        }});
+}

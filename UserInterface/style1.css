@@ -1,0 +1,395 @@
+.formText{
+display:inline-block;
+float:left;
+}
+
+
+
+#db1{
+background-color:#F8F8F8;
+/*display:inline-block;*/
+text-align:left;
+border:1px solid #E6E6FA;
+position:relative;
+padding:10px;
+}
+
+#highlights{
+background-color:#F8F8F8;
+/*display:inline-block;*/
+text-align:left;
+border:1px solid #E6E6FA;
+position:relative;
+padding:5px;
+}
+#highlights h3{
+	padding:2px;
+text-align:center;
+
+}
+
+#db3 {
+  position: relative;
+  display: inline-block;
+}
+
+#db3 #tooltip_lb{
+  visibility: hidden;
+  width: 500px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  top: 15%;
+  right: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+ #db3 #tooltip_lb::after{
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+ #db3:hover #tooltip_lb {
+  visibility: visible;
+  opacity: 0.5;
+}
+
+
+ button .btn-report{
+  text-align:center;
+ margin: 0 auto;
+}
+
+/*
+#demo1{
+overflow: visible;
+}
+*/
+
+
+#db h4{
+	padding:10px;
+text-align:center;
+}
+
+#left h2{
+color:#708090;
+}
+
+
+.arrow {
+  border: solid black;
+  border-width: 0 2px 2px 0;
+  display: inline-block;
+  padding: 3px;
+}
+
+.right {
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
+
+
+.button{
+ background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 18px;
+  margin: 4px 2px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+  width:400px;
+}
+
+.menu-btn{
+background-color: white;
+  color: black;
+  border: 2px solid #e7e7e7;
+}
+
+
+
+.menu-btn:hover {background-color: #e7e7e7;}
+
+.btn-report, .reply, .reply-btn, .discuss-btn, .solve-btn, .question-btn, .edit-btn, .cancel, .edit, .solve, .discuss, .question{
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 5px 8px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 12px;
+  margin: 2px 1px;
+  cursor: pointer;
+  width:70px;
+}
+
+.edit, .reply, .cancel, .discuss, .solve, .question{
+background-color:#077995;
+}
+
+.edit-btn{
+background-color:#077995;
+font-size:8px;
+width:40px;
+padding: 2px 3px;
+}
+
+.btn-report {
+width: 160px;
+text-align:center;
+}
+
+
+#info {
+   /* position: absolute; /*or fixed*/
+/*    right: 0px; */
+    float:right;
+}
+
+#wrapper{
+margin:0;
+overflow:auto;
+position:relative;
+text-align:center;
+width:100%;
+display:inline-block;
+}
+
+#top{
+border-bottom:1px solid #C7CDD1 ;
+height:15%
+}
+
+.style1 {
+font-size: 15px;
+text-align:center;
+} 
+
+
+
+#left{
+float:left;
+width:69%;
+overflow:auto;
+/*border-right:1px solid #C7CDD1;*/
+margin:auto;
+text-align:center;
+}
+#right{
+float:left;
+width:29%;
+border:1px;
+position:relative;
+background-color:#F8F8F8;
+text-align:center;
+}
+
+#tool{
+/*height:auto;
+overflow:hidden;
+position:relative;*/
+}
+#sna{
+/*display: inline-block;
+position:absolute;
+float:left;*/
+text-align:center;
+}
+
+h1{
+ background-color: #6C757C;
+ color:white;
+}
+
+h4{
+margin-block-start: 0.5em;
+ margin-block-end: 0.5em;
+}
+
+#c_name{
+font-size: 1.125rem;
+}
+
+
+.clear {
+	clear:both;
+}
+
+circle {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  overflow: auto;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.2);    
+  z-index:9;
+}
+
+.text_div{
+width:280px;
+height:100px;
+/*padding:5px;*/
+background-color:#F8F8F8;
+/*display:inline-block;*/
+text-align:left;
+border:1px solid #E6E6FA;
+position:relative;
+}
+
+.edit-btn{
+position:absolute;
+     top:0;
+     right:0;
+}
+
+/*.show_form {
+	display : none;
+	
+}
+*/
+{box-sizing: border-box;}
+
+/* Button used to open the contact form - fixed at the bottom of the page */
+.open-button {
+  background-color: #555;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  opacity: 0.8;
+  position: fixed;
+  bottom: 23px;
+  right: 28px;
+  width: 380px;
+}
+
+.container {
+  position: relative;
+}
+
+.node {
+    position: relative; 
+    top: 0;
+}
+
+/* The popup form - hidden by default */
+.show_form {
+/*  display: none;  */
+  position: absolute;
+  top: 0;
+  margin-right: 10em;
+  margin-left: 3.5em;
+  float: right;
+  /*bottom: -10; */
+  border: 3px solid #f1f1f1;
+  z-index: 1;
+}
+
+/* es to the form container */
+.form-container-main, .form-container-post {
+  max-width: 8000px;
+  padding: 05px;
+  background-color: white;
+}
+
+
+
+
+.open_form {
+	display: none;
+}
+
+/* Full-width input fields */
+.form-container-main input[type=text], .form-container-main input[type=password], .form-container-post  input[type=text], .form-container-post input[type=password]{
+  width: 95%;
+  padding: 05px;
+  margin: 3px 0 22px 0;
+  border: none;
+  background: #f1f1f1;
+}
+
+/* When the inputs get focus, do something */
+.form-container-main input[type=text]:focus, .form-container-main input[type=password]:focus, .form-container-post input[type:text]:focus .form-container-post input[type:password]:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+/* Set a style for the submit/login button */
+.form-container-main .btn,.form-container-post .btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 08px 12px;
+  border: none;
+  cursor: pointer;
+  /*width: 100%;*/
+  margin-bottom:5px;
+  opacity: 0.8;
+}
+
+/* Add a red background color to the cancel button */
+.form-container-post .cancel {
+  background-color: red;
+}
+
+/* Add some hover effects to buttons */
+.form-container-main .btn:hover, .open-button:hover, .form-container-post .btn:hover, .open-button:hover {
+  opacity: 1;
+}
+
+.name {
+	font-size: 15px;
+}
+
+.list {
+	display: block;
+}
+
+.container-root {
+    position: fixed;
+    top:  50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+
+/* ===== Select Box ===== */
+.title {
+  font-size: 1rem;
+  display: inline-block;
+  margin: 3em 2em;
+  width: 200px;
+  background-color: transparent;
+  position: relative;
+  cursor: pointer;
+}
+
+.submit {
+ background-color: #4CAF50;
+  color: white;
+  padding: 08px 12px;
+  border: none;
+  cursor: pointer;
+  float: left bottom;
+  margin-bottom:5px;
+  opacity: 0.8;
+}
+
+
+/*  div.node, div.show_form { float:left;  }  */
